@@ -1,7 +1,5 @@
 # Basic SGF Visualizer
 
-A simple SGF visualizer, does not support annotations, variations, or weird stuff 
-
 - [ ] Hello world
 - [ ] Read [SGF FF[4]](https://www.red-bean.com/sgf/index.html)
 - [ ] Read file from disk
