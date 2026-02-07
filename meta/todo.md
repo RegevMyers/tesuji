@@ -9,7 +9,7 @@
 - [ ] Tests: Add test for basic properties
 - [ ] Use Ratatui
 - [ ] Parser: Parse all [general](https://www.red-bean.com/sgf/properties.html) and [go specific (GM[1])](https://www.red-bean.com/sgf/go.html#properties) properties
-- [ ] Engine: Handle all move types, include `Info` (etc.) data too?
+- [ ] Engine: Output all move types, include `Info` (etc.) data too?
 - [ ] Visualizer: visualize all `Move`, `Setup`, `Root` and `Info` properties (?), as well as everything needed for end-of-game annotations
 - [ ] Tests: Test!
 
