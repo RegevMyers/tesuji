@@ -2,6 +2,10 @@ use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
 
+mod sgf;
+
+use sgf::parser::parsers::collection::Collection;
+
 fn read_file(path: &Path) -> Result<String, std::io::Error> {
     let mut reader = BufReader::new(File::open(&path)?);
     let mut content = String::new();
@@ -11,7 +15,8 @@ fn read_file(path: &Path) -> Result<String, std::io::Error> {
 }
 
 fn main() -> Result<(), std::io::Error> {
-    let content = read_file(Path::new("test_test.deleteme"))?;
+    let mut c: Collection;
+    let content = read_file(Path::new("ff4_ex.sgf"))?;
     println!("{}", content);
 
     Ok(())
