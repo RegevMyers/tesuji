@@ -3,6 +3,7 @@ use std::io::{BufReader, Read};
 use std::path::Path;
 
 mod sgf;
+mod common;
 
 use sgf::parser::parsers::collection::Collection;
 
@@ -14,10 +15,10 @@ fn read_file(path: &Path) -> Result<String, std::io::Error> {
     Ok(content)
 }
 
-fn main() -> Result<(), std::io::Error> {
-    let mut c: Collection;
-    let content = read_file(Path::new("ff4_ex.sgf"))?;
-    println!("{}", content);
+fn main() -> Result<(), common::Error> {
+    let c: Collection = String::new("wajawaja").parse()?;
+    // let content = read_file(Path::new("ff4_ex.sgf"))?;
+    // println!("{}", content);
 
     Ok(())
 }
