@@ -15,10 +15,10 @@ fn read_file(path: &Path) -> Result<String, std::io::Error> {
     Ok(content)
 }
 
-fn main() -> Result<(), common::Error> {
-    let c: Collection = String::new("wajawaja").parse()?;
+fn main() -> Result<(), common::error::Error> {
+    let c: Collection = "wajawaja".parse()?;
     // let content = read_file(Path::new("ff4_ex.sgf"))?;
-    // println!("{}", content);
+    println!("[ + ] Done");
 
     Ok(())
 }
