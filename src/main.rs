@@ -6,6 +6,7 @@ mod sgf;
 mod common;
 
 use sgf::parser::parsers::collection::Collection;
+use common::logging as log;
 
 fn read_file(path: &Path) -> Result<String, std::io::Error> {
     let mut reader = BufReader::new(File::open(&path)?);
@@ -16,10 +17,14 @@ fn read_file(path: &Path) -> Result<String, std::io::Error> {
 }
 
 fn main() -> Result<(), common::error::Error> {
+    log::location("Main");
+
     let c: Collection = "wajawaja".parse()?;
     // let content = read_file(Path::new("ff4_ex.sgf"))?;
     dbg!(c);
-    println!("[ + ] Done");
+    
+    log::ok("Done");
+    
 
     Ok(())
 }
