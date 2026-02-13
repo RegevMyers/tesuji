@@ -24,7 +24,6 @@ fn main() -> Result<(), common::error::Error> {
     dbg!(c);
     
     log::ok("Done");
-    
-
     Ok(())
 }
+
