@@ -18,6 +18,7 @@ fn read_file(path: &Path) -> Result<String, std::io::Error> {
 fn main() -> Result<(), common::error::Error> {
     let c: Collection = "wajawaja".parse()?;
     // let content = read_file(Path::new("ff4_ex.sgf"))?;
+    dbg!(c);
     println!("[ + ] Done");
 
     Ok(())
