@@ -1,7 +1,7 @@
 mod sgf;
 mod common;
 
-use sgf::parser::parsers::collection::Collection;
+use sgf::parser::parsers::Collection;
 use common::logging as log;
 
 use std::path::Path;
@@ -21,9 +21,11 @@ fn read_file(path: &Path) -> Result<String, std::io::Error> {
 
 fn main() -> Result<(), common::error::Error> {
     log::location("Main");
-    log::input(&format!("Args: {:?}", env::args().collect::<Vec<_>>()));
 
-    log::location(&format!("Reading: {}", env::args().next().unwrap()));
+    let args: Vec<String> = env::args().collect();
+    log::input(&format!("Cmd: {:?}", args));
+
+    log::location(&format!("Reading: {}", args[1]));
     let c: Collection = "wajawaja".parse()?;
     // let content = read_file(Path::new("ff4_ex.sgf"))?;
     dbg!(c);

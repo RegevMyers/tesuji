@@ -2,7 +2,7 @@
 
 - [x] Hello world
 - [x] Read [SGF FF[4]](https://www.red-bean.com/sgf/index.html)
-- [ ] Read file from disk
+- [x] Read file from disk
 - [ ] Parser: Only down to property indentifiers and values, treat all properties as unknown except simple stone placment
 - [ ] Engine: Play out (root) game tree and calucate game state, stones only
 - [ ] Visualizer: Again, stones only
