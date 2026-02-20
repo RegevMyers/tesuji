@@ -2,7 +2,13 @@ use std::fmt;
 
 #[derive(Debug)]
 pub struct Error {
-    pub message: String,
+    message: String,
+}
+
+impl Error {
+    pub fn new(message: String) -> Self {
+        Self{ message }
+    }
 }
 
 impl fmt::Display for Error {

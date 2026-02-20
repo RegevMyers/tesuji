@@ -1,2 +1,4 @@
 pub mod parsers;
-pub mod error;
+mod error;
+
+pub use crate::sgf::parser::error::*;

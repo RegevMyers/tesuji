@@ -26,7 +26,7 @@ fn main() -> Result<(), common::error::Error> {
     log::input(&format!("Cmd: {:?}", args));
 
     log::location(&format!("Reading: {}", args[1]));
-    let a: Value = double("1").ok_or(common::error::Error{message: "oops".to_string()})?;
+    let a: Value = compose(number, number, "6:7")?;
     // let content = read_file(Path::new("ff4_ex.sgf"))?;
     dbg!(a);
     
