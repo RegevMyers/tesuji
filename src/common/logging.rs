@@ -1,4 +1,4 @@
-use colored::{ Color, Colorize, ColoredString };
+use colored::{ Colorize, ColoredString };
 
 enum Type {
     Ok, 
