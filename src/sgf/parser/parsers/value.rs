@@ -1,19 +1,16 @@
 use crate::sgf::parser;
 
-use std::num::{ ParseIntError, ParseFloatError };
-use std::char::ParseCharError;
-
 use nom::{
     Parser,
     IResult,
-    combinator::{ recognize, map, map_res },
-    character::complete::{ digit1 },
-    bytes::complete::{ tag },
     branch::{ alt },
-    error::{ Error, ErrorKind },
+    combinator::{ value },
+    bytes::complete::{ tag },
+    number::complete::{ double as nom_double },
+    character::complete::{ i64 as nom_i64, satisfy },
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Value {
     None,
     Number(i64),
@@ -26,48 +23,50 @@ pub enum Value {
     Compose(Box<Value>, Box<Value>)
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Double {
     Once,
     Twice,
 }
 
 // TODO: Move to common?
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Color {
     Black,
     White,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Move {
     Stone{ x: u8, y: u8 },
     Pass,
 }
 
-pub fn none(string: &str) -> IResult<&str, Value, parser::Error> {
+pub type ValueParser = fn(&str) -> IResult<&str, Value>;
+
+pub fn none(string: &str) -> IResult<&str, Value> {
     Ok((string, Value::None))
 }
 
 pub fn number(string: &str) -> IResult<&str, Value> {
-    recognize(digit1).map_res(str::parse).map(Value::Number).parse(string)
+    nom_i64.map(Value::Number).parse(string)
 }
 
 pub fn real(string: &str) -> IResult<&str, Value> {
-    recognize(double).map_res(str::parse).map(Value::Real).parse(string)
+    nom_double.map(Value::Real).parse(string)
 }
 
 pub fn double(string: &str) -> IResult<&str, Value> {
     alt((
-        tag("1").map(|_| Value::Double(Double::Once)),
-        tag("2").map(|_| Value::Double(Double::Twice)),
+        value(Value::Double(Double::Once), tag("1")),
+        value(Value::Double(Double::Twice), tag("2")),
     )).parse(string)
 }
 
-pub fn color(string: &str) -> Result<Value, parser::Error> {
+pub fn color(string: &str) -> IResult<&str, Value> {
     alt((
-        tag("B").map(|_| Value::Color(Color::Black)),
-        tag("W").map(|_| Value::Color(Color::White)),
+        value(Value::Color(Color::Black), tag("B")),
+        value(Value::Color(Color::White), tag("W")),
     )).parse(string)
 }
 
@@ -79,33 +78,25 @@ pub fn text(string: &str) -> Result<Value, parser::Error> {
     todo!()
 }
 
-pub fn r#move(string: &str) -> Result<Value, parser::Error> {
-    match string.len() {
-        0 => Ok(Value::Move(Move::Pass)),
-        2 => Ok(Value::Move(stone(string)?)),
-        _ => Err(parser::Error::new("Value::Move", string, "length must be 2 (for a move) or 0 (for a pass)")),
-    }
+pub fn r#move(string: &str) -> IResult<&str, Value> {
+    alt((
+        value(Value::Move(Move::Pass), none),
+        stone.map(Value::Move),
+    )).parse(string)
 }
 
-fn stone(string: &str) -> Result<Move, parser::Error> {
-    let (x, y) = string.split_at(1);
-    Ok(Move::Stone{ x: line(x)?, y: line(y)? })
+fn stone(string: &str) -> IResult<&str, Move> {
+    (line, line).map(|(x, y)| Move::Stone{x, y}).parse(string)
 }
 
-fn line(string: &str) -> Result<u8, parser::Error> {
-    match string.parse().map_err(|e: ParseCharError| parser::Error::new("char", string, &e.to_string()))? {
-        lowercase if ('a' <= lowercase && lowercase <= 'z') => Ok((lowercase as u8) - ('a' as u8)),
-        uppercase if ('A' <= uppercase && uppercase <= 'Z') => Ok((uppercase as u8) - ('A' as u8)),
-        _ => Err(parser::Error::new("line", string, "line must be a letter ([a-z] or [A-Z])"))
-    }
+fn line(string: &str) -> IResult<&str, u8> {
+    alt((
+        satisfy(|c: char| c.is_ascii_lowercase()).map(|c: char| (c as u8) - ('a' as u8)),
+        satisfy(|c: char| c.is_ascii_uppercase()).map(|c: char| (c as u8) - ('A' as u8)),
+    )).parse(string)
 }
 
-pub fn compose(parse_a: Parser, parse_b: Parser, string: &str) -> Result<Value, parser::Error> {
-    let (a_str, b_str) = string.split_once(':').ok_or(parser::Error::new("Value::Compose", string, "no compose separator (':') found"))?;
-
-    let a = parse_a(a_str)?;
-    let b = parse_b(b_str)?;
-
-    Ok(Value::Compose(Box::new(a), Box::new(b)))
+pub fn compose(parse_a: ValueParser, parse_b: ValueParser, string: &str) -> IResult<&str, Value> {
+    (parse_a, tag(":"), parse_b).map(|(a, _, b)| Value::Compose(Box::new(a), Box::new(b))).parse(string)
 }
 

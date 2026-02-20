@@ -4,8 +4,9 @@ mod common;
 use sgf::parser::*;
 use common::logging as log;
 
-use std::path::Path;
+use nom::Finish;
 
+use std::path::Path;
 use std::fs;
 use std::io;
 use std::io::{Read};
@@ -26,7 +27,7 @@ fn main() -> Result<(), common::error::Error> {
     log::input(&format!("Cmd: {:?}", args));
 
     log::location(&format!("Reading: {}", args[1]));
-    let a: Value = compose(number, number, "6:3a")?;
+    let (rest, a): (&str, Value) = compose(number, number, "6:3a").finish().unwrap();
     // let content = read_file(Path::new("ff4_ex.sgf"))?;
     dbg!(a);
     
