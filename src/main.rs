@@ -1,7 +1,7 @@
 mod sgf;
 mod common;
 
-use sgf::parser::parsers::Collection;
+use sgf::parser::parsers::*;
 use common::logging as log;
 
 use std::path::Path;
@@ -26,9 +26,9 @@ fn main() -> Result<(), common::error::Error> {
     log::input(&format!("Cmd: {:?}", args));
 
     log::location(&format!("Reading: {}", args[1]));
-    let c: Collection = "wajawaja".parse()?;
+    let a: Value = double("1").ok_or(common::error::Error{message: "oops".to_string()})?;
     // let content = read_file(Path::new("ff4_ex.sgf"))?;
-    dbg!(c);
+    dbg!(a);
     
     log::ok("Done");
     Ok(())

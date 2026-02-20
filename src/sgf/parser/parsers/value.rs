@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum Value {
     None,
     Number(i64),
@@ -9,17 +10,20 @@ pub enum Value {
     Move(Move),
 }
 
+#[derive(Debug)]
 pub enum Double {
     Once,
     Twice,
 }
 
 // TODO: Move to common?
+#[derive(Debug)]
 pub enum Color {
     Black,
     White,
 }
 
+#[derive(Debug)]
 pub enum Move {
     Stone{ x: u8, y: u8 },
     Pass,
