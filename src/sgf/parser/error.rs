@@ -4,16 +4,16 @@ use crate::common;
 
 #[derive(Debug)]
 pub struct Error { 
-    string: String,
     token: String,
+    string: String,
     reason: String
 }
 
 impl Error {
-    pub fn new(string: &str, token: &str, reason: &str) -> Self {
+    pub fn new(token: &str, string: &str, reason: &str) -> Self {
         Self{
-            string: string.to_string(),
             token: token.to_string(),
+            string: string.to_string(),
             reason: reason.to_string(),
         }
     }
