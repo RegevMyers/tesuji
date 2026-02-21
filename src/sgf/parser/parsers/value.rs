@@ -10,7 +10,7 @@ use nom::{
     character::complete::{ i64 as nom_i64, satisfy },
 };
 
-use crate::common::error;
+use crate::common::Error;
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -44,62 +44,64 @@ pub enum Move {
     Pass,
 }
 
-pub type ValueParser = fn(&str) -> IResult<&str, Value>;
+pub type ValueParser = fn(&str) -> IResult<&str, Value, parser::Error>;
 
-pub fn none(string: &str) -> IResult<&str, Value> {
+pub fn none(string: &str) -> IResult<&str, Value, parser::Error> {
     Ok((string, Value::None))
 }
 
-pub fn number(string: &str) -> IResult<&str, Value> {
-    nom_i64.map(Value::Number).parse(string)
+pub fn number(string: &str) -> IResult<&str, Value, parser::Error> {
+    nom_i64.map(Value::Number).token("Value::Number").parse(string)
 }
 
-pub fn real(string: &str) -> IResult<&str, Value> {
+pub fn real(string: &str) -> IResult<&str, Value, parser::Error> {
     nom_double.map(Value::Real).parse(string)
 }
 
-pub fn double(string: &str) -> IResult<&str, Value> {
+pub fn double(string: &str) -> IResult<&str, Value, parser::Error> {
     alt((
         value(Value::Double(Double::Once), tag("1")),
         value(Value::Double(Double::Twice), tag("2")),
     )).parse(string)
 }
 
-pub fn color(string: &str) -> IResult<&str, Value> {
+pub fn color(string: &str) -> IResult<&str, Value, parser::Error> {
     alt((
         value(Value::Color(Color::Black), tag("B")),
         value(Value::Color(Color::White), tag("W")),
     )).parse(string)
 }
 
-pub fn simple_text(string: &str) -> Result<Value, parser::Error> {
+pub fn simple_text(string: &str) -> IResult<&str, Value, parser::Error> {
     todo!()
 }
 
-pub fn text(string: &str) -> Result<Value, parser::Error> {
+pub fn text(string: &str) -> IResult<&str, Value, parser::Error> {
     todo!()
 }
 
-pub fn r#move(string: &str) -> IResult<&str, Value> {
+pub fn r#move(string: &str) -> IResult<&str, Value, parser::Error> {
     alt((
         value(Value::Move(Move::Pass), none),
         stone.map(Value::Move),
     )).parse(string)
 }
 
-fn stone(string: &str) -> IResult<&str, Move> {
+fn stone(string: &str) -> IResult<&str, Move, parser::Error> {
     (line, line).map(|(x, y)| Move::Stone{x, y}).parse(string)
 }
 
-fn line(string: &str) -> IResult<&str, u8> {
+fn line(string: &str) -> IResult<&str, u8, parser::Error> {
     alt((
         satisfy(|c: char| c.is_ascii_lowercase()).map(|c: char| (c as u8) - ('a' as u8)),
         satisfy(|c: char| c.is_ascii_uppercase()).map(|c: char| (c as u8) - ('A' as u8)),
     )).parse(string)
 }
 
-pub fn compose(parse_a: ValueParser, parse_b: ValueParser, string: &str) -> IResult<&str, Value> {
-    (parse_a, tag(":"), parse_b).map(|(a, _, b)| Value::Compose(Box::new(a), Box::new(b))).parse(string)
+pub fn compose(parse_a: ValueParser, parse_b: ValueParser, string: &str) -> IResult<&str, Value, parser::Error> {
+    (parse_a, tag(":"), parse_b).map(|(a, _, b)|
+        Value::Compose(Box::new(a), Box::new(b))
+    ).parse(string)
 }
 
 #[cfg(test)]
@@ -107,7 +109,7 @@ mod test {
     use nom::Finish;
 
     #[test]
-    fn none() -> Result<(), super::error::Error> {
+    fn none() -> Result<(), super::Error> {
         super::number("a").finish()?;
         Ok(())
 

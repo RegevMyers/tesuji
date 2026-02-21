@@ -20,7 +20,7 @@ fn read_file(path: &Path) -> Result<String, std::io::Error> {
     Ok(content)
 }
 
-fn main() -> Result<(), common::error::Error> {
+fn main() -> Result<(), common::Error> {
     log::location("Main");
 
     let args: Vec<String> = env::args().collect();
