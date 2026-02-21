@@ -35,7 +35,7 @@ fn get_symbol(log_type: Type) -> ColoredString {
         Type::Unclear   => "?".yellow(),
         Type::Fail      => "-".red(),
         Type::Error     => "!".bright_red(),
-        Type::Fatal     => "x".bold().bright_red(),
+        Type::Fatal     => "X".bold().bright_red(),
         Type::Location  => "@".white(),
         Type::Parrallel => "&".white(),
         Type::Command   => "$".white(),

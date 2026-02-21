@@ -6,8 +6,8 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn new(message: String) -> Self {
-        Self{ message }
+    pub fn new(message: &str) -> Self {
+        Self{ message: message.to_string() }
     }
 }
 
@@ -18,4 +18,10 @@ impl fmt::Display for Error {
 }
 
 impl std::error::Error for Error { }
+
+impl From<nom::error::Error<&str>> for Error {
+    fn from(nom_error: nom::error::Error<&str>) -> Error {
+        Error::new(&nom_error.to_string())
+    }
+}
 

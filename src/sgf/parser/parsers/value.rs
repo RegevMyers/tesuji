@@ -10,6 +10,8 @@ use nom::{
     character::complete::{ i64 as nom_i64, satisfy },
 };
 
+use crate::common::error;
+
 #[derive(Debug, Clone)]
 pub enum Value {
     None,
@@ -100,3 +102,14 @@ pub fn compose(parse_a: ValueParser, parse_b: ValueParser, string: &str) -> IRes
     (parse_a, tag(":"), parse_b).map(|(a, _, b)| Value::Compose(Box::new(a), Box::new(b))).parse(string)
 }
 
+#[cfg(test)]
+mod test {
+    use nom::Finish;
+
+    #[test]
+    fn none() -> Result<(), super::error::Error> {
+        super::number("a").finish()?;
+        Ok(())
+
+    }
+}

@@ -28,8 +28,7 @@ fn main() -> Result<(), common::error::Error> {
 
     log::location(&format!("Reading: {}", args[1]));
     let (rest, a): (&str, Value) = compose(number, number, "6:3a").finish().unwrap();
-    // let content = read_file(Path::new("ff4_ex.sgf"))?;
-    dbg!(a);
+    log::ok(&format!("6:3 -> {:?}", a));
     
     log::ok("Done");
     Ok(())
