@@ -1,6 +1,10 @@
+# 🏗️Under Construction🏗️ 
+
+---
+
 # Baduk
 
-`Baduk` is a TUI application for playing Go/Baduk/WeiQi online in [OGS](https://online-go.com/)
+`Baduk` is a TUI application for playing Go/Baduk/WeiQi online in [OGS](https://online-go.com/).
 
 ---
 
