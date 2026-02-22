@@ -4,8 +4,6 @@ mod common;
 use sgf::parser::*;
 use common::logging as log;
 
-use nom::Finish;
-
 use std::path::Path;
 use std::fs;
 use std::io;
@@ -27,7 +25,7 @@ fn main() -> Result<(), common::Error> {
     log::input(&format!("Cmd: {:?}", args));
 
     log::location(&format!("Reading: {}", args[1]));
-    let (rest, a): (&str, Value) = compose(number, number, "6:3a").finish().unwrap();
+    let (a, rest): (Value, String) = compose(number, number, "6:3a").unwrap();
     log::ok(&format!("6:3 -> {:?}", a));
     
     log::ok("Done");

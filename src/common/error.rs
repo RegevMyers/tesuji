@@ -19,9 +19,3 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error { }
 
-impl From<nom::error::Error<&str>> for Error {
-    fn from(nom_error: nom::error::Error<&str>) -> Error {
-        Error::new(&nom_error.to_string())
-    }
-}
-

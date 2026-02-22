@@ -1,18 +1,8 @@
 use crate::sgf::parser;
 
-use nom::{
-    Parser,
-    IResult,
-    branch::{ alt },
-    combinator::{ value },
-    bytes::complete::{ tag },
-    number::complete::{ double as nom_double },
-    character::complete::{ i64 as nom_i64, satisfy },
-};
-
 use crate::common::Error;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Value {
     None,
     Number(i64),
@@ -25,92 +15,92 @@ pub enum Value {
     Compose(Box<Value>, Box<Value>)
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Double {
     Once,
     Twice,
 }
 
 // TODO: Move to common?
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Color {
     Black,
     White,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Move {
     Stone{ x: u8, y: u8 },
     Pass,
 }
 
-pub type ValueParser = fn(&str) -> IResult<&str, Value, parser::Error>;
-
-pub fn none(string: &str) -> IResult<&str, Value, parser::Error> {
-    Ok((string, Value::None))
+pub fn none(string: &str) -> Result<(Value, String), parser::Error> {
+    Ok((Value::None, string.to_string()))
 }
 
-pub fn number(string: &str) -> IResult<&str, Value, parser::Error> {
-    nom_i64.map(Value::Number).token("Value::Number").parse(string)
+pub fn number(string: &str) -> Result<(Value, String), parser::Error> {
+    match string.by_ref().take_while(|c: char| c.is_ascii_digit()).parse() {
+        Some(number) => Some((Value, string)),
+        Err(_) => Err(parser::Error())
+    }
 }
 
-pub fn real(string: &str) -> IResult<&str, Value, parser::Error> {
-    nom_double.map(Value::Real).parse(string)
+pub fn real(string: &str) -> Result<(Value, String), parser::Error> {
+    todo!() //nom_double.map(Value::Real).parse(string)
 }
 
-pub fn double(string: &str) -> IResult<&str, Value, parser::Error> {
-    alt((
-        value(Value::Double(Double::Once), tag("1")),
-        value(Value::Double(Double::Twice), tag("2")),
-    )).parse(string)
+pub fn double(string: &str) -> Result<(Value, String), parser::Error> {
+    todo!() //alt((
+        //value(Value::Double(Double::Once), tag("1")),
+        //value(Value::Double(Double::Twice), tag("2")),
+    //)).parse(string)
 }
 
-pub fn color(string: &str) -> IResult<&str, Value, parser::Error> {
-    alt((
-        value(Value::Color(Color::Black), tag("B")),
-        value(Value::Color(Color::White), tag("W")),
-    )).parse(string)
+pub fn color(string: &str) -> Result<(Value, String), parser::Error> {
+    todo!() //alt((
+        //value(Value::Color(Color::Black), tag("B")),
+        //value(Value::Color(Color::White), tag("W")),
+    //)).parse(string)
 }
 
-pub fn simple_text(string: &str) -> IResult<&str, Value, parser::Error> {
+pub fn simple_text(string: &str) -> Result<(Value, String), parser::Error> {
     todo!()
 }
 
-pub fn text(string: &str) -> IResult<&str, Value, parser::Error> {
+pub fn text(string: &str) -> Result<(Value, String), parser::Error> {
     todo!()
 }
 
-pub fn r#move(string: &str) -> IResult<&str, Value, parser::Error> {
-    alt((
-        value(Value::Move(Move::Pass), none),
-        stone.map(Value::Move),
-    )).parse(string)
+pub fn r#move(string: &str) -> Result<(Value, String), parser::Error> {
+    todo!()
+        //alt((
+        //value(Value::Move(Move::Pass), none),
+        //stone.map(Value::Move),
+    //)).parse(string)
 }
 
-fn stone(string: &str) -> IResult<&str, Move, parser::Error> {
-    (line, line).map(|(x, y)| Move::Stone{x, y}).parse(string)
+fn stone(string: &str) -> Result<(Move, String), parser::Error> {
+    todo!() //(line, line).map(|(x, y)| Move::Stone{x, y}).parse(string)
 }
 
-fn line(string: &str) -> IResult<&str, u8, parser::Error> {
-    alt((
-        satisfy(|c: char| c.is_ascii_lowercase()).map(|c: char| (c as u8) - ('a' as u8)),
-        satisfy(|c: char| c.is_ascii_uppercase()).map(|c: char| (c as u8) - ('A' as u8)),
-    )).parse(string)
+fn line(string: &str) -> Result<(u8, String), parser::Error> {
+    todo!()
+    //alt((
+        //satisfy(|c: char| c.is_ascii_lowercase()).map(|c: char| (c as u8) - ('a' as u8)),
+        //satisfy(|c: char| c.is_ascii_uppercase()).map(|c: char| (c as u8) - ('A' as u8)),
+    //)).parse(string)
 }
 
-pub fn compose(parse_a: ValueParser, parse_b: ValueParser, string: &str) -> IResult<&str, Value, parser::Error> {
-    (parse_a, tag(":"), parse_b).map(|(a, _, b)|
-        Value::Compose(Box::new(a), Box::new(b))
-    ).parse(string)
+pub fn compose(parse_a: impl parser::Parser<Value>, parse_b: impl parser::Parser<Value>, string: &str) -> Result<(Value, String), parser::Error> {
+    todo!() //(parse_a, tag(":"), parse_b).map(|(a, _, b)|
+        //Value::Compose(Box::new(a), Box::new(b))
+    //).parse(string)
 }
 
 #[cfg(test)]
 mod test {
-    use nom::Finish;
-
     #[test]
     fn none() -> Result<(), super::Error> {
-        super::number("a").finish()?;
         Ok(())
 
     }
