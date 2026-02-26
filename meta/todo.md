@@ -13,7 +13,10 @@
   - [ ] PropValue
   - [x] CValueType
   - [x] ValueType
-- [ ] Sane Error handeling
+- [ ] Add location & input to parse errors
+
+---   
+
 - [ ] Engine: Play out (root) game tree and calucate game state, stones only
 - [ ] Visualizer: Again, stones only
 - [ ] Tests: Add test for basic properties
@@ -22,7 +25,6 @@
 - [ ] Engine: Output all move types, include `Info` (etc.) data too?
 - [ ] Visualizer: visualize all `Move`, `Setup`, `Root` and `Info` properties (?), as well as everything needed for end-of-game annotations
 - [ ] Tests: Test!
-- [ ] Add to `nom` github?
 
 # Basic OGS Client
 

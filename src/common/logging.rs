@@ -11,7 +11,7 @@ enum Type {
     Command, 
     Info, 
     Hint, 
-    Comment, 
+    Trace, 
     Input, 
     Output, 
 }
@@ -41,7 +41,7 @@ fn get_symbol(log_type: Type) -> ColoredString {
         Type::Command   => "$".white(),
         Type::Info      => "i".blue(),
         Type::Hint      => "*".purple(),
-        Type::Comment   => ";".dimmed(),
+        Type::Trace     => ";".dimmed(),
         Type::Input     => "<".cyan(),
         Type::Output    => ">".cyan(),
     }
@@ -57,7 +57,7 @@ fn get_symbol(log_type: Type) -> ColoredString {
 #[allow(unused)] pub fn command(message: &str) { log(Type::Command, message) }
 #[allow(unused)] pub fn info(message: &str) { log(Type::Info, message) }
 #[allow(unused)] pub fn hint(message: &str) { log(Type::Hint, message) }
-#[allow(unused)] pub fn comment(message: &str) { log(Type::Comment, message) }
+#[allow(unused)] pub fn comment(message: &str) { log(Type::Trace, message) }
 #[allow(unused)] pub fn input(message: &str) { log(Type::Input, message) }
 #[allow(unused)] pub fn output(message: &str) { log(Type::Output, message) }
 

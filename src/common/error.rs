@@ -1,3 +1,5 @@
+use crate::log;
+
 use std::fmt;
 
 #[derive(Debug)]
@@ -8,6 +10,10 @@ pub struct Error {
 impl Error {
     pub fn new(message: &str) -> Self {
         Self{ message: message.to_string() }
+    }
+
+    pub fn log(&self) {
+        log::error(&self.to_string())
     }
 }
 
