@@ -1,21 +1,32 @@
-# MVP
+# Basic SGF Visualizer
 
-## Milestone 1: Basic SGF Visualizer
+- [x] Hello world
+- [x] Read [SGF FF[4]](https://www.red-bean.com/sgf/index.html)
+- [x] Read file from disk
+- [ ] Parser: Only down to property indentifiers and values, treat all properties as unknown except simple stone placment
+  - [ ] Collection 
+  - [ ] GameTree
+  - [ ] Sequence
+  - [ ] Node
+  - [ ] Property
+  - [ ] PropIdent
+  - [ ] PropValue
+  - [x] CValueType
+  - [x] ValueType
+- [ ] Add location & input to parse errors
 
-A simple SGF visualizer, does not support annotations, variations, or weird stuff 
+---   
 
-- [ ] Hello world
-- [ ] Read [SGF FF[4]](https://www.red-bean.com/sgf/index.html)
-- [ ] Read file from disk
-- [ ] Basic parser: Only down to property indentifiers and values, treat all properties as unknown except simple stone placment
-- [ ] Basic visualizer: Only handle simple stone placment
-- [ ] Tests: add test for basic properties
+- [ ] Engine: Play out (root) game tree and calucate game state, stones only
+- [ ] Visualizer: Again, stones only
+- [ ] Tests: Add test for basic properties
 - [ ] Use Ratatui
-- [ ] Parser: parse all [general](https://www.red-bean.com/sgf/properties.html) and [go specific (GM[1])](https://www.red-bean.com/sgf/go.html#properties) properties
-- [ ] Tests: test!
-- [ ] Visualizer: visualize all `Move`, `Setup`, `Root` and `Info` properties
+- [ ] Parser: Parse all [general](https://www.red-bean.com/sgf/properties.html) and [go specific (GM[1])](https://www.red-bean.com/sgf/go.html#properties) properties
+- [ ] Engine: Output all move types, include `Info` (etc.) data too?
+- [ ] Visualizer: visualize all `Move`, `Setup`, `Root` and `Info` properties (?), as well as everything needed for end-of-game annotations
+- [ ] Tests: Test!
 
-## Milestone 2: Basic OGS Client
+# Basic OGS Client
 
 - [ ] Go over [OGS API Docs](https://online-go.com/api-docs/)
 - [ ] Basic client: Track a game (by ID), show game state and visualize board
@@ -28,5 +39,22 @@ A simple SGF visualizer, does not support annotations, variations, or weird stuf
 
 # Apt Pkg
 
-# More Features
+- [ ] Package as an `apt` package
+- [ ] Upload to a local repo and manually test
+
+# Advanced Move-Making
+
+- [ ] Allow making moves with arrow keys (and numpad for star points?)
+
+# Chat
+
+- [ ] Show chat
+- [ ] Allow to write messages
+- [ ] Allow normal, malkovich, and personal settings
+
+# Variations
+
+- [ ] Parse variations
+- [ ] Visualize tree structure
+- [ ] Enable traversing tree with arrow keys
 
