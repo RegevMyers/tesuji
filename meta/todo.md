@@ -2,7 +2,7 @@
 
 - [x] Hello world
 - [x] Read [SGF FF[4]](https://www.red-bean.com/sgf/index.html)
-- [x] Read file from disk
+- [ ] Read file from disk
 - [ ] Parser: Only down to property indentifiers and values, treat all properties as unknown except simple stone placment
   - [ ] Collection 
   - [ ] GameTree
@@ -11,8 +11,8 @@
   - [ ] Property
   - [ ] PropIdent
   - [ ] PropValue
-  - [x] CValueType
-  - [x] ValueType
+  - [ ] CValueType
+  - [ ] ValueType
 - [ ] Add location & input to parse errors
 
 ---   
