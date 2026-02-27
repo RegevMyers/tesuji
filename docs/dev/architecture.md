@@ -4,18 +4,28 @@
 
 ## SGF
 
-### Parser (Text -> `Sgf`)
+### Parser
 
 The SGF Parser is the component that parses SGFs from the server and outputs them in a format (`Sgf`) that downstream components (the `Engine`) can easily work with.
 
-The parser is written using [nom](https://docs.rs/nom/latest/nom) - a parser combinator library.
+The parser is a hand-written recursive decent parser in a lexer/parser architecture.
 
-### Engine (`Sgf` -> `Board`)
+see:
 
-The `Engine` takes an `Sgf` from the parser and plays out the game, to produce a `Board`, with stones and annotations.
+```
+src/
+ sgf/
+  lexer/
+  parser/
+```
 
-### Visualizer (`Board` -> Art)
+### Engine
+
+The `Engine` takes an `Sgf` from the parser and plays out the game, to produce a `Board`, with stone and annotation information.
+
+### Visualizer
 
 The `Visualizer` takes a `Board`, and draws out a visualization of it - a board art. 
 
 ## `RestApi` and `RealtimeApi`
+
