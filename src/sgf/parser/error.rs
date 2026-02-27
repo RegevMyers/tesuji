@@ -25,10 +25,3 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error { }
 
-// TODO: this should be in common::Error, not here
-impl From<Error> for common::Error {
-    fn from(error: Error) -> common::Error {
-        common::Error::new(&error.to_string())
-    }
-}
-
