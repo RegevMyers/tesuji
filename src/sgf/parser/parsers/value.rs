@@ -1,7 +1,7 @@
 use crate::sgf::parser;
 
 use crate::common::Error;
-use crate::common::logging as log;
+use crate::common::log;
 
 #[derive(Debug)]
 pub enum Value {
@@ -36,34 +36,23 @@ pub enum Move {
 }
 
 pub fn none(string: &str) -> Result<(Value, &str), parser::Error> {
-    Ok((Value::None, string))
+    todo!()
 }
 
 pub fn number(string: &str) -> Result<(Value, &str), parser::Error> {
-    let is_non_digit = |c: &char| !c.is_ascii_digit();
-    
-    match string.chars().find(is_non_digit) {
-        Some(end) => Ok((Value::Number(string[..end].parse()?), string[end..])),
-        None => Err(parser::Error::new("Value::Number", string, "No digits found"))
-    }
+    todo!()
 }
 
 pub fn real(string: &str) -> Result<(Value, &str), parser::Error> {
-    todo!() //nom_double.map(Value::Real).parse(string)
+    todo!()
 }
 
 pub fn double(string: &str) -> Result<(Value, &str), parser::Error> {
-    todo!() //alt((
-        //value(Value::Double(Double::Once), tag("1")),
-        //value(Value::Double(Double::Twice), tag("2")),
-    //)).parse(string)
+    todo!()
 }
 
 pub fn color(string: &str) -> Result<(Value, &str), parser::Error> {
-    todo!() //alt((
-        //value(Value::Color(Color::Black), tag("B")),
-        //value(Value::Color(Color::White), tag("W")),
-    //)).parse(string)
+    todo!()
 }
 
 pub fn simple_text(string: &str) -> Result<(Value, &str), parser::Error> {
@@ -76,29 +65,19 @@ pub fn text(string: &str) -> Result<(Value, &str), parser::Error> {
 
 pub fn r#move(string: &str) -> Result<(Value, &str), parser::Error> {
     todo!()
-        //alt((
-        //value(Value::Move(Move::Pass), none),
-        //stone.map(Value::Move),
-    //)).parse(string)
 }
 
 fn stone(string: &str) -> Result<(Move, &str), parser::Error> {
-    todo!() //(line, line).map(|(x, y)| Move::Stone{x, y}).parse(string)
+    todo!()
 }
 
 fn line(string: &str) -> Result<(u8, &str), parser::Error> {
     todo!()
-    //alt((
-        //satisfy(|c: char| c.is_ascii_lowercase()).map(|c: char| (c as u8) - ('a' as u8)),
-        //satisfy(|c: char| c.is_ascii_uppercase()).map(|c: char| (c as u8) - ('A' as u8)),
-    //)).parse(string)
 }
 
-pub fn compose(parse_a: impl parser::Parser<Value>, parse_b: impl parser::Parser<Value>, string: &str) -> Result<(Value, &str), parser::Error> {
-    todo!() //(parse_a, tag(":"), parse_b).map(|(a, _, b)|
-        //Value::Compose(Box::new(a), Box::new(b))
-    //).parse(string)
-}
+//pub fn compose(parse_a: impl parser::Parser<Value>, parse_b: impl parser::Parser<Value>, string: &str) -> Result<(Value, &str), parser::Error> {
+//    todo!()
+//}
 
 #[cfg(test)]
 mod test {

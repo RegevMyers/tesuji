@@ -40,7 +40,7 @@ fn get_symbol(log_type: Type) -> ColoredString {
         Type::Parrallel => "&".white(),
         Type::Command   => "$".white(),
         Type::Info      => "i".blue(),
-        Type::Hint      => "*".purple(),
+        Type::Hint      => "*".purple().dimmed(),
         Type::Trace     => ";".dimmed(),
         Type::Input     => "<".cyan(),
         Type::Output    => ">".cyan(),
