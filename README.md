@@ -1,10 +1,10 @@
-# 🏗️Under Construction🏗️ 
+# 🏗️ Under Construction 🏗️ 
 
 ---
 
-# Baduk
+# Tesuji
 
-`Baduk` is a TUI application for playing Go/Baduk/WeiQi online in [OGS](https://online-go.com/).
+`tesuji` is a terminal application for playing Go/WeiQi/Baduk online in [OGS](https://online-go.com/).
 
 ---
 
