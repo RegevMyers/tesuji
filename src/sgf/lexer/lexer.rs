@@ -1,6 +1,7 @@
 use crate::sgf::lexer;
 
 use crate::common::Color;
+use crate::common::utils;
 
 #[derive(Debug, PartialEq)]
 pub enum Token { 

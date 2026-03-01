@@ -1,6 +1,10 @@
 use crate::sgf::parser;
 
-use crate::common::Error;
+use crate::common::{
+    Color,
+    Error,
+};
+
 use crate::common::log;
 
 #[derive(Debug)]
@@ -22,13 +26,6 @@ pub enum Double {
     Twice,
 }
 
-// TODO: Move to common?
-#[derive(Debug)]
-pub enum Color {
-    Black,
-    White,
-}
-
 #[derive(Debug)]
 pub enum Move {
     Stone{ x: u8, y: u8 },
@@ -36,7 +33,8 @@ pub enum Move {
 }
 
 pub fn none(string: &str) -> Result<(Value, &str), parser::Error> {
-    todo!()
+    let (number, rest) = take_while(char::is_ascii_digit, input)?;
+    Ok((Token::Number(number.to_string()), rest))
 }
 
 pub fn number(string: &str) -> Result<(Value, &str), parser::Error> {
@@ -73,6 +71,35 @@ fn stone(string: &str) -> Result<(Move, &str), parser::Error> {
 
 fn line(string: &str) -> Result<(u8, &str), parser::Error> {
     todo!()
+}
+
+fn take_while(predicate: impl Fn(char) -> bool, input: &str) -> Result<(&str, &str), Option<char>> {
+    if input.is_empty() {
+        return Err(parser::Error::empty())
+    }
+
+    let position = input.find(|character: char| !predicate(character)).ok_or(input.len() - 1);
+
+    match position {
+        0 => Err(Some(input.chars().next())),
+        position => Ok((&input[..position], &input[position..])),
+    }
+}
+
+fn take_one(input: &str) -> Result<(&str, &str), Option<char>> {
+    take_one_if(|_: char| true, input)
+}
+
+fn take_one_of(character: char, input: &str) -> Result<(&str, &str), Option<char>> {
+    take_one_if(|c: char| c == character, input)
+}
+
+fn take_one_if(predicate: impl Fn(char) -> bool, input: &str) -> Result<(&str, &str), Option<char>> {
+    match input.chars().next() {
+        Some(c) if predicate(c) => Ok((&input[..1], &input[1..])),
+        Some(c) => Err(Some(c)),
+        None => Err(None)
+    }
 }
 
 //pub fn compose(parse_a: impl parser::Parser<Value>, parse_b: impl parser::Parser<Value>, string: &str) -> Result<(Value, &str), parser::Error> {
