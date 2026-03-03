@@ -1,6 +1,9 @@
+use sgf_parse::SgfParseError;
+
 use crate::log;
 
 use std::fmt;
+use std::io;
 
 #[derive(Debug)]
 pub struct Error {
@@ -25,3 +28,14 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error { }
 
+impl From<SgfParseError> for Error {
+    fn from(sgf_parse_error: SgfParseError) -> Self {
+        Self{ message: sgf_parse_error.to_string() }
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(io_error: io::Error) -> Self {
+        Self{ message: io_error.to_string() }
+    }
+}

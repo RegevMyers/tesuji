@@ -1,3 +1,5 @@
 pub mod parser;
-pub mod engine;
-pub mod visualizer;
+mod engine;
+pub mod renderer;
+
+pub use crate::sgf::engine::*;

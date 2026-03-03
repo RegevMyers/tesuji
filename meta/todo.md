@@ -1,29 +1,15 @@
-# Basic SGF Visualizer
+# Basic SGF Renderer
 
 - [x] Hello world
-- [x] Read [SGF FF[4]](https://www.red-bean.com/sgf/index.html)
 - [x] Read file from disk
-- [ ] Parser: Only down to property indentifiers and values, treat all properties as unknown except simple stone placment
-  - [ ] Collection 
-  - [ ] GameTree
-  - [ ] Sequence
-  - [ ] Node
-  - [ ] Property
-  - [ ] PropIdent
-  - [ ] PropValue
-  - [x] CValueType
-  - [x] ValueType
-- [ ] Add location & input to parse errors
-
----   
-
-- [ ] Engine: Play out (root) game tree and calucate game state, stones only
-- [ ] Visualizer: Again, stones only
+- [ ] Parse SGF using `sgf-parse`
+- [ ] Get gameId from cmdline and get sgf from server
+- [ ] Engine: Play out (root) game tree and calculate game state, stones only
+- [ ] Renderer: Stones only
 - [ ] Tests: Add test for basic properties
 - [ ] Use Ratatui
-- [ ] Parser: Parse all [general](https://www.red-bean.com/sgf/properties.html) and [go specific (GM[1])](https://www.red-bean.com/sgf/go.html#properties) properties
 - [ ] Engine: Output all move types, include `Info` (etc.) data too?
-- [ ] Visualizer: visualize all `Move`, `Setup`, `Root` and `Info` properties (?), as well as everything needed for end-of-game annotations
+- [ ] Renderer: visualize all `Move`, `Setup`, `Root` and `Info` properties (?), as well as everything needed for end-of-game annotations
 - [ ] Tests: Test!
 
 # Basic OGS Client
@@ -54,7 +40,6 @@
 
 # Variations
 
-- [ ] Parse variations
-- [ ] Visualize tree structure
+- [ ] Render tree structure
 - [ ] Enable traversing tree with arrow keys
 
