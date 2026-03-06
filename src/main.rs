@@ -1,5 +1,5 @@
-mod sgf;
 mod common;
+mod sgf;
 
 use sgf_parse::go as parser;
 
@@ -32,7 +32,11 @@ fn main() -> Result<(), common::Error> {
     let root = collection.first().ok_or(common::Error::new("Empty collection"))?;
     let main_variation = root.main_variation();
 
-    sgf::Board::new(main_variation.collect());
+    if let Ok(board) = sgf::Board::new(main_variation.collect()) {
+        println!("{}", board);
+    }
+    
+    
 
 //  for node in main_variation {
 //      if let Some(r#move) = node.get_move() {
