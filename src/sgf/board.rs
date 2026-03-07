@@ -36,14 +36,14 @@ impl Board {
             log::trace(&format!("Node | Move: {:?}, Setup: {:?}", Self::get_move(node, (board_x, board_y)), Self::get_setups(node)));
 
             if let Some((color, Move::Move(Point{ x, y }))) = Self::get_move(node, (board_x, board_y)) {
-                board[(x, y)] = Intersection{ stone: Some(color) };
+                board[(x.into(), y.into())] = Intersection{ stone: Some(color) };
             }
 
             let setups = Self::get_setups(node);
 
             for (color, points) in setups {
                 for Point{ x, y } in points {
-                    board[(x, y)] = Intersection{ stone: color };
+                    board[(x.into(), y.into())] = Intersection{ stone: color };
                 }
             }
         }
@@ -61,7 +61,7 @@ impl Board {
         }
 
         match root.get_property("SZ") {
-            Some(&Prop::SZ((x, y))) => Ok((x, y)),
+            Some(&Prop::SZ((x, y))) => Ok((x.into(), y.into())),
             _ => Err(Error::new("Missing property in root node: SZ")),
         }
     }
