@@ -12,7 +12,7 @@ use std::io::{Read};
 use std::env;
 
 fn read_file(path: &Path) -> Result<String, io::Error> {
-    let mut reader = io::BufReader::new(fs::File::open(&path)?);
+    let mut reader = io::BufReader::new(fs::File::open(path)?);
     let mut content = String::new();
     reader.read_to_string(&mut content)?;
 

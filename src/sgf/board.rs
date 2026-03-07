@@ -108,7 +108,7 @@ impl fmt::Display for Board {
         }
 
         while let Some(row) = rows.next() {
-            if !rows.peek().is_none() {
+            if rows.peek().is_some() {
                 Self::print_column(row.collect(), empty_mid, formatter)?;
             }
             else {
@@ -129,11 +129,11 @@ impl Board {
         }
 
         while let Some(intersection) = intersections.next() {
-            if !intersections.peek().is_none() {
+            if intersections.peek().is_some() {
                 write!(formatter, "{}{}", Self::display_intersection(intersection, empty_symbols.mid), Self::CONNECTOR)?;
             }
             else {
-                write!(formatter, "{}\n", Self::display_intersection(intersection, empty_symbols.right))?;
+                writeln!(formatter, "{}", Self::display_intersection(intersection, empty_symbols.right))?;
             }
         }
 

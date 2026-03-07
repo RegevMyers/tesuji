@@ -24,7 +24,7 @@ fn log(log_type: Type, message: &str) {
         println!("[ {} ] {}", symbol, main_log);
     }
 
-    while let Some(sub_log) = lines.next() {
+    for sub_log in lines {
         println!("  |---> {}", sub_log);
     }
 }
