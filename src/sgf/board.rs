@@ -110,8 +110,6 @@ impl fmt::Display for Board {
         }
 
         while let Some(row) = rows.next() {
-            Self::print_vertical_connect_column(self.board.num_rows(), formatter)?;
-
             if !rows.peek().is_none() {
                 Self::print_column(row.collect(), empty_mid, formatter)?;
             }
@@ -125,11 +123,10 @@ impl fmt::Display for Board {
 }
 
 impl Board {
-    const WHITE_CIRCLE: char        = '\u{25EF}'; 
-    const BLACK_CIRCLE: char        = '\u{25CF}'; 
+    const WHITE_CIRCLE: char        = '\u{2B24}'; // ⬤
+    const BLACK_CIRCLE: char        = '\u{25EF}'; // ◯
 
-    const HORIZONAL_CONNECTOR: &str = "\u{2500}\u{2500}\u{2500}"; // ───
-    const VERTICAL_CONNECTOR: char  = '\u{2502}'; // 
+    const CONNECTOR: char           = '\u{2500}'; // ─
 
     const EMPTY_LEFT: char          = '\u{251C}'; // ├ 
     const EMPTY: char               = '\u{253C}'; // ┼
@@ -143,24 +140,16 @@ impl Board {
     const EMPTY_BOTTOM: char        = '\u{2534}'; // ┴
     const EMPTY_BOTTOM_RIGHT: char  = '\u{2518}'; // ┘
 
-    fn print_vertical_connect_column(num_intersections: usize, formatter: &mut fmt::Formatter) -> fmt::Result {
-        for _ in 0..num_intersections {
-            write!(formatter, "{}   ", Self::VERTICAL_CONNECTOR)?;
-        }
-
-        write!(formatter, "\n")
-    }
-
     fn print_column(row: Vec<&Intersection>, empty_symbols: EmptySymbols, formatter: &mut fmt::Formatter) -> fmt::Result {
         let mut intersections = row.into_iter().peekable();
 
         if let Some(intersection) = intersections.next() {
-            write!(formatter, "{}{}", Self::display_intersection(intersection, empty_symbols.left), Self::HORIZONAL_CONNECTOR)?;
+            write!(formatter, "{}{}", Self::display_intersection(intersection, empty_symbols.left), Self::CONNECTOR)?;
         }
 
         while let Some(intersection) = intersections.next() {
             if !intersections.peek().is_none() {
-                write!(formatter, "{}{}", Self::display_intersection(intersection, empty_symbols.mid), Self::HORIZONAL_CONNECTOR)?;
+                write!(formatter, "{}{}", Self::display_intersection(intersection, empty_symbols.mid), Self::CONNECTOR)?;
             }
             else {
                 write!(formatter, "{}\n", Self::display_intersection(intersection, empty_symbols.right))?;

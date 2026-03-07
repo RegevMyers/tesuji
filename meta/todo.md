@@ -1,15 +1,17 @@
 # Basic SGF Renderer
 
+Application that gets GameId from the command line and renders it, works during the game and with end-of-game annotations
+
 - [x] Hello world
 - [x] Read file from disk
-- [ ] Parse SGF using `sgf-parse`
+- [x] Parse SGF using `sgf-parse`
+- [x] Print Goban
+- [ ] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
 - [ ] Get gameId from cmdline and get sgf from server
-- [ ] Engine: Play out (root) game tree and calculate game state, stones only
-- [ ] Renderer: Stones only
-- [ ] Tests: Add test for basic properties
+- [ ] Tests: Yeah ...
 - [ ] Use Ratatui
-- [ ] Engine: Output all move types, include `Info` (etc.) data too?
-- [ ] Renderer: visualize all `Move`, `Setup`, `Root` and `Info` properties (?), as well as everything needed for end-of-game annotations
+- [ ] Renderer: visualize more nodes `Move`, `Setup`, `Root` and `Info` properties (?)
+- [ ] Renderer: Get a end-of-game sgf and visualize it
 - [ ] Tests: Test!
 
 # Basic OGS Client
