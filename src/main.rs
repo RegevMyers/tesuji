@@ -33,7 +33,7 @@ fn main() -> Result<(), common::Error> {
     let main_variation = root.main_variation();
 
     if let Ok(board) = sgf::Board::new(main_variation.collect()) {
-        println!("{}", board);
+        println!("\n{}", board);
     }
   
     log::ok("Done");
