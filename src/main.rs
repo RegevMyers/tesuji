@@ -35,23 +35,7 @@ fn main() -> Result<(), common::Error> {
     if let Ok(board) = sgf::Board::new(main_variation.collect()) {
         println!("{}", board);
     }
-    
-    
-
-//  for node in main_variation {
-//      if let Some(r#move) = node.get_move() {
-//          match r#move {
-//              sgf::Prop::B(sgf::Move::Pass) => log::output("(B) Pass"),
-//              sgf::Prop::W(sgf::Move::Pass) => log::output("(W) Pass"),
-//              sgf::Prop::B(sgf::Move::Move(sgf::Point{ x, y })) => log::output(&format!("(B) {}-{}", x, y)),
-//              sgf::Prop::W(sgf::Move::Move(sgf::Point{ x, y })) => log::output(&format!("(W) {}-{}", x, y)),
-//              _ => todo!() 
-//          }
-//      }
-//  }
-///    let (a, rest): (Value, String) = compose(number, number, "6:3a")?;
-//    log::ok(&format!("6:3 -> {:?}", a));
-//  
+  
     log::ok("Done");
     Ok(())
 }
