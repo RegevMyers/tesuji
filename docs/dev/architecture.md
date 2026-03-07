@@ -2,15 +2,17 @@
 
 ## Game Manager
 
+...
+
 ## SGF
 
-### Engine (`Sgf` -> `Board`)
+### Board
 
-The `Engine` takes an `Sgf` from the parses it (using `sgf-parse`) and plays out the game, to produce a `Board`, with stones and annotations.
+A board is built from an `sgf`, stores the board state, ((captures)), ((komi)).
 
-### Visualizer (`Board` -> Art)
+It has a `fmt::Display` implementation which displays the goban.
 
-The `Visualizer` takes a `Board`, and draws out a visualization of it - a board art. 
+## `RestApi` and `WsApi`
 
-## `RestApi` and `RealtimeApi`
+...
 

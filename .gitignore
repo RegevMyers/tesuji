@@ -63,3 +63,9 @@ tags
 # Added by cargo
 
 /target
+
+
+# Tesuji
+
+.sgf
+
