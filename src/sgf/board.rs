@@ -28,26 +28,24 @@ impl Board {
         let root = nodes.first().ok_or(Error::new("No nodes"))?;
 
         let (board_x, board_y) = Self::get_board_dimensions(root)?;
+        let mut board = Array2D::filled_with(Intersection{ stone: None }, board_x, board_y);
 
-        log::info(&format!("Board Data | Dimensions: {}-{}", board_x, board_y));
-
-        let mut board = Array2D::filled_with(Intersection{ stone: None }, board_x.into(), board_y.into());
+        log::info(&format!("Board | Dimensions: {}-{}", board_x, board_y));
 
         for node in nodes {
             log::trace(&format!("Node | Move: {:?}, Setup: {:?}", Self::get_move(node, (board_x, board_y)), Self::get_setups(node)));
 
             if let Some((color, Move::Move(Point{ x, y }))) = Self::get_move(node, (board_x, board_y)) {
-                board[(x.into(), y.into())] = Intersection{ stone: Some(color) };
+                board[(x, y)] = Intersection{ stone: Some(color) };
             }
 
             let setups = Self::get_setups(node);
 
             for (color, points) in setups {
                 for Point{ x, y } in points {
-                    board[(x.into(), y.into())] = Intersection{ stone: color };
+                    board[(x, y)] = Intersection{ stone: color };
                 }
             }
-
         }
 
         Ok(Self{ board })
@@ -57,7 +55,7 @@ impl Board {
 type GoNode = SgfNode<Prop>;
 
 impl Board {
-    fn get_board_dimensions(root: &GoNode) -> Result<(u8, u8), Error> {
+    fn get_board_dimensions(root: &GoNode) -> Result<(usize, usize), Error> {
         if !root.is_root {
             return Err(Error::new("Node is not root node"))
         }
@@ -68,7 +66,7 @@ impl Board {
         }
     }
 
-    fn get_move(node: &GoNode, board_dimensions: (u8, u8)) -> Option<(Color, Move)> {
+    fn get_move(node: &GoNode, board_dimensions: (usize, usize)) -> Option<(Color, Move)> {
         let is_normal_board_size = {
             let (x, y) = board_dimensions;
             x <= 19 && y <= 19
@@ -123,23 +121,6 @@ impl fmt::Display for Board {
 }
 
 impl Board {
-    const WHITE_CIRCLE: char        = '\u{2B24}'; // ⬤
-    const BLACK_CIRCLE: char        = '\u{25EF}'; // ◯
-
-    const CONNECTOR: char           = '\u{2500}'; // ─
-
-    const EMPTY_LEFT: char          = '\u{251C}'; // ├ 
-    const EMPTY: char               = '\u{253C}'; // ┼
-    const EMPTY_RIGHT: char         = '\u{2524}'; // ┤
-
-    const EMPTY_TOP_LEFT: char      = '\u{250C}'; // ┌
-    const EMPTY_TOP: char           = '\u{252C}'; // ┬
-    const EMPTY_TOP_RIGHT: char     = '\u{2510}'; // ┐
-
-    const EMPTY_BOTTOM_LEFT: char   = '\u{2514}'; // └
-    const EMPTY_BOTTOM: char        = '\u{2534}'; // ┴
-    const EMPTY_BOTTOM_RIGHT: char  = '\u{2518}'; // ┘
-
     fn print_column(row: Vec<&Intersection>, empty_symbols: EmptySymbols, formatter: &mut fmt::Formatter) -> fmt::Result {
         let mut intersections = row.into_iter().peekable();
 
@@ -168,4 +149,22 @@ impl Board {
     }
 }
 
+impl Board {
+    const BLACK_CIRCLE: char        = '\u{25EF}'; // ◯
+    const WHITE_CIRCLE: char        = '\u{2B24}'; // ⬤
+
+    const CONNECTOR: char           = '\u{2500}'; // ─
+
+    const EMPTY_TOP_LEFT: char      = '\u{250C}'; // ┌
+    const EMPTY_TOP: char           = '\u{252C}'; // ┬
+    const EMPTY_TOP_RIGHT: char     = '\u{2510}'; // ┐
+
+    const EMPTY_LEFT: char          = '\u{251C}'; // ├ 
+    const EMPTY: char               = '\u{253C}'; // ┼
+    const EMPTY_RIGHT: char         = '\u{2524}'; // ┤
+
+    const EMPTY_BOTTOM_LEFT: char   = '\u{2514}'; // └
+    const EMPTY_BOTTOM: char        = '\u{2534}'; // ┴
+    const EMPTY_BOTTOM_RIGHT: char  = '\u{2518}'; // ┘
+}
 
