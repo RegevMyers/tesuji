@@ -12,7 +12,7 @@ pub struct Error {
 
 impl Error {
     pub fn new(message: &str) -> Self {
-        Self{ message: message.to_string() }
+        Self { message: message.to_string() }
     }
 
     pub fn log(&self) {
@@ -21,21 +21,21 @@ impl Error {
 }
 
 impl fmt::Display for Error {
-     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         write!(formatter, "{}", self.message)
     }
 }
 
-impl std::error::Error for Error { }
+impl std::error::Error for Error {}
 
 impl From<SgfParseError> for Error {
     fn from(sgf_parse_error: SgfParseError) -> Self {
-        Self{ message: sgf_parse_error.to_string() }
+        Self { message: sgf_parse_error.to_string() }
     }
 }
 
 impl From<io::Error> for Error {
     fn from(io_error: io::Error) -> Self {
-        Self{ message: io_error.to_string() }
+        Self { message: io_error.to_string() }
     }
 }

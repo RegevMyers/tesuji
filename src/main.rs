@@ -5,11 +5,11 @@ use sgf_parse::go as parser;
 
 use common::log;
 
-use std::path::Path;
+use std::env;
 use std::fs;
 use std::io;
-use std::io::{Read};
-use std::env;
+use std::io::Read;
+use std::path::Path;
 
 fn read_file(path: &Path) -> Result<String, io::Error> {
     let mut reader = io::BufReader::new(fs::File::open(path)?);
@@ -35,7 +35,7 @@ fn main() -> Result<(), common::Error> {
     if let Ok(board) = sgf::Board::new(main_variation.collect()) {
         println!("\n{}", board);
     }
-  
+
     log::ok("Done");
     Ok(())
 }
