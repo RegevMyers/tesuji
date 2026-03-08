@@ -32,8 +32,9 @@ fn main() -> Result<(), common::Error> {
     let root = collection.first().ok_or(common::Error::new("Empty collection"))?;
     let main_variation = root.main_variation();
 
-    if let Ok(board) = sgf::Board::new(main_variation.collect()) {
-        println!("\n{}", board);
+    match sgf::Board::new(main_variation.collect()) {
+        Ok(board) => println!("\n{}", board),
+        Err(error) => error.log(),
     }
 
     log::ok("Done");
