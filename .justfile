@@ -6,8 +6,8 @@ set shell := [ "bash", "-cu" ]
 
 # Run
 [group("run")]
-@run file:
-    cargo run --release {{file}}
+@run sgf:
+    cargo run --release {{ sgf }}
 
 # Build
 [group("run")]
@@ -33,9 +33,9 @@ set shell := [ "bash", "-cu" ]
 
 # Push
 [group("vcs")]
-@push commit-message: ci
+@push msg: ci
     git add -A
-    git commit -m "{{commit-message}}"
+    git commit -m "{{ msg }}"
     git push origin HEAD
 
 # Format
