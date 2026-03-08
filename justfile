@@ -1,4 +1,6 @@
-default: 
+set shell := [ "bash", "-c" ]
+
+_default: 
     @just --list
 
 run file:
@@ -6,6 +8,11 @@ run file:
 
 test:
     @cargo test
+
+push commit-message:
+    @git add -A
+    @git commit -m "{{commit-message}}"
+    @git push origin HEAD
 
 fmt: 
     @cargo fmt
