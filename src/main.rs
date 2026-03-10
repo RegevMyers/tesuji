@@ -38,5 +38,6 @@ fn main() -> Result<(), common::Error> {
     }
 
     log::ok("Done");
+
     Ok(())
 }

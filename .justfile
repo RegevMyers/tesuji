@@ -1,6 +1,7 @@
 set shell := [ "bash", "-cu" ]
 
 @_default: 
+    echo
     just --list --unsorted
     echo
 
