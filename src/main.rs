@@ -20,11 +20,10 @@ fn read_file(path: &Path) -> Result<String, io::Error> {
     Ok(content)
 }
 
-fn app() -> Result<(), common::Error> {
-    let cli = cli::Cli::parse();
-    log::location(&format!("Reading: {}", &cli.sgf));
+fn app(sgf_path: &str) -> Result<(), common::Error> {
+    log::location(&format!("Reading: {}", sgf_path));
 
-    let sgf = read_file(Path::new(&cli.sgf))?;
+    let sgf = read_file(Path::new(sgf_path))?;
     let collection = parser::parse(&sgf)?;
     let root = collection.first().ok_or(common::Error::new("Empty collection"))?;
     let main_variation = root.main_variation();
@@ -38,9 +37,9 @@ fn app() -> Result<(), common::Error> {
 }
 
 fn main() {
-    log::location("Main");
+    let cli = cli::Cli::parse();
 
-    match app() {
+    match app(&cli.sgf) {
         Ok(()) => log::ok("Done"),
         Err(error) => error.log(),
     }
