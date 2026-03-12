@@ -13,6 +13,7 @@ Application that gets GameId from the command line and renders it, works during 
 - [ ] Renderer: visualize more nodes `Move`, `Setup`, `Root` and `Info` properties (?)
 - [ ] Renderer: Get a end-of-game sgf and visualize it
 - [ ] Tests: Test!
+- [ ] Make src/common/logging.rs a macro monster
 
 # Basic OGS Client
 

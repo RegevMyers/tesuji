@@ -1,11 +1,12 @@
+mod cli;
 mod common;
 mod sgf;
 
+use clap::Parser;
 use sgf_parse::go as parser;
 
 use common::log;
 
-use std::env;
 use std::fs;
 use std::io;
 use std::io::Read;
@@ -19,15 +20,11 @@ fn read_file(path: &Path) -> Result<String, io::Error> {
     Ok(content)
 }
 
-fn main() -> Result<(), common::Error> {
-    log::location("Main");
+fn app() -> Result<(), common::Error> {
+    let cli = cli::Cli::parse();
+    log::location(&format!("Reading: {}", &cli.sgf));
 
-    let args: Vec<String> = env::args().collect();
-    log::input(&format!("Cmd: {:?}", args));
-
-    log::location(&format!("Reading: {}", args[1]));
-
-    let sgf = read_file(Path::new(&args[1]))?;
+    let sgf = read_file(Path::new(&cli.sgf))?;
     let collection = parser::parse(&sgf)?;
     let root = collection.first().ok_or(common::Error::new("Empty collection"))?;
     let main_variation = root.main_variation();
@@ -37,7 +34,14 @@ fn main() -> Result<(), common::Error> {
         Err(error) => error.log(),
     }
 
-    log::ok("Done");
-
     Ok(())
+}
+
+fn main() {
+    log::location("Main");
+
+    match app() {
+        Ok(()) => log::ok("Done"),
+        Err(error) => error.log(),
+    }
 }
