@@ -8,7 +8,7 @@ set shell := [ "bash", "-cu" ]
 # Run
 [group("run")]
 @run sgf:
-    cargo run --release {{ sgf }}
+    cargo run --release -- {{ sgf }}
 
 # Build
 [group("run")]
