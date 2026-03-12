@@ -18,7 +18,10 @@ Application that gets GameId from the command line and renders it, works during 
 # Basic OGS Client
 
 - [ ] Go over [OGS API Docs](https://online-go.com/api-docs/)
+- [ ] Add as a workspace
+- [ ] Loop: just show the json
 - [ ] Basic client: Track a game (by ID), show game state and visualize board
+- [ ] Use ratatui
 - [ ] User input: Create input window below board
 - [ ] User input: Parse user input, allow just moves, and make them
 - [ ] Show more info about the game
