@@ -150,6 +150,7 @@ impl Board {
 
     const EMPTY_LEFT: char          = '\u{251C}'; // ├ 
     const EMPTY: char               = '\u{253C}'; // ┼
+    const EMPTY_STAR: char          = '\u{256C}'; // ╬
     const EMPTY_RIGHT: char         = '\u{2524}'; // ┤
 
     const EMPTY_BOTTOM_LEFT: char   = '\u{2514}'; // └
