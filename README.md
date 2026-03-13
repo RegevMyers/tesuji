@@ -8,6 +8,15 @@
 
 ---
 
+# How to Run
+
+``` bash
+$ cargo install just
+$ just run
+```
+
+---
+
 # Resources
 
 - [SGF FF[4] Spec - Red Bean](https://www.red-bean.com/sgf/)

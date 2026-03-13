@@ -7,7 +7,7 @@ set shell := [ "bash", "-cu" ]
 
 # Run
 [group("run")]
-@run cli:
+@run cli="":
     cargo run --release -- {{ cli }}
 
 # Build
@@ -33,7 +33,7 @@ set shell := [ "bash", "-cu" ]
 
 # Push
 [group("vcs")]
-@push msg: ci
+@push msg: (ci)
     git add -A
     git commit -m "{{ msg }}"
     git push origin HEAD
