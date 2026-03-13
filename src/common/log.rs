@@ -9,6 +9,7 @@ enum Type {
     Location,
     Parrallel,
     Command,
+    Message,
     Info,
     Hint,
     Trace,
@@ -41,7 +42,8 @@ impl From<Type> for ColoredString {
             Type::Location  => "@".white(),
             Type::Parrallel => "&".white(),
             Type::Command   => "$".white(),
-            Type::Info      => "i".blue(),
+            Type::Message   => "#".bold().blue(),
+            Type::Info      => "i".bright_blue(),
             Type::Hint      => "*".purple().dimmed(),
             Type::Trace     => ";".dimmed(),
             Type::Input     => "<".cyan(),
@@ -88,6 +90,11 @@ pub fn parrallel(message: &str) {
 #[allow(unused)]
 pub fn command(message: &str) {
     log(Type::Command, message)
+}
+
+#[allow(unused)]
+pub fn message(message: &str) {
+    log(Type::Message, message)
 }
 
 #[allow(unused)]

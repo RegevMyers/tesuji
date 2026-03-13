@@ -5,7 +5,7 @@ mod sgf;
 use clap::Parser;
 use sgf_parse::go as parser;
 
-use common::log;
+use common::{Error, log};
 
 use std::fs;
 use std::io;
@@ -20,18 +20,18 @@ fn read_file(path: &Path) -> Result<String, io::Error> {
     Ok(content)
 }
 
-fn app(sgf_path: &str) -> Result<(), common::Error> {
-    log::location(&format!("Reading: {}", sgf_path));
+fn app(sgf_path: &str) -> Result<(), Error> {
+    log::message("Welcome to Tesuji!");
+
+    log::input(&format!("Reading: {}", sgf_path));
 
     let sgf = read_file(Path::new(sgf_path))?;
     let collection = parser::parse(&sgf)?;
-    let root = collection.first().ok_or(common::Error::new("Empty collection"))?;
+    let root = collection.first().ok_or(Error::message("Empty collection"))?;
     let main_variation = root.main_variation();
 
-    match sgf::Board::new(main_variation.collect()) {
-        Ok(board) => println!("\n{}", board),
-        Err(error) => error.log(),
-    }
+    let board = sgf::Board::new(main_variation.collect())?;
+    println!("\n{}", board);
 
     Ok(())
 }

@@ -22,7 +22,7 @@ struct EmptySymbols {
 
 impl Board {
     pub fn new(nodes: Vec<&GoNode>) -> Result<Self, Error> {
-        let root = nodes.first().ok_or(Error::new("No nodes"))?;
+        let root = nodes.first().ok_or(Error::message("No nodes"))?;
 
         let (board_x, board_y) = Self::get_board_dimensions(root)?;
         let mut board = Array2D::filled_with(None, board_x, board_y);
@@ -55,12 +55,12 @@ type GoNode = SgfNode<Prop>;
 impl Board {
     fn get_board_dimensions(root: &GoNode) -> Result<(usize, usize), Error> {
         if !root.is_root {
-            return Err(Error::new("Node is not root node"));
+            return Err(Error::message("Node is not root node"));
         }
 
         match root.get_property("SZ") {
             Some(&Prop::SZ((x, y))) => Ok((x.into(), y.into())),
-            _ => Err(Error::new("Missing property in root node: SZ")),
+            _ => Err(Error::message("Missing property in root node: SZ")),
         }
     }
 
