@@ -29,8 +29,9 @@ Application that gets GameId from the command line and renders it, works during 
 - [ ] Support listing and choosing games from games the user participates in
 - [ ] Support creating games
 
-# Apt Pkg
+# Pkg
 
+- [ ] Package as a `cargo` binary
 - [ ] Package as an `apt` package
 - [ ] Upload to a local repo and manually test
 
