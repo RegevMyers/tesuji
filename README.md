@@ -11,8 +11,8 @@
 # How to Run
 
 ``` bash
-$ cargo install just
-$ just run
+cargo install just
+just run
 ```
 
 ---
