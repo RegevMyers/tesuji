@@ -60,4 +60,3 @@ set shell := [ "bash", "-cu" ]
     just clippy
     just test
 
-
