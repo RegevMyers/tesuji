@@ -144,13 +144,14 @@ impl Board {
 
     const CONNECTOR: char           = '\u{2500}'; // ─
 
+    const STAR: char                = '\u{256C}'; // ╬
+
     const EMPTY_TOP_LEFT: char      = '\u{250C}'; // ┌
     const EMPTY_TOP: char           = '\u{252C}'; // ┬
     const EMPTY_TOP_RIGHT: char     = '\u{2510}'; // ┐
 
     const EMPTY_LEFT: char          = '\u{251C}'; // ├ 
     const EMPTY: char               = '\u{253C}'; // ┼
-    const EMPTY_STAR: char          = '\u{256C}'; // ╬
     const EMPTY_RIGHT: char         = '\u{2524}'; // ┤
 
     const EMPTY_BOTTOM_LEFT: char   = '\u{2514}'; // └
@@ -160,4 +161,4 @@ impl Board {
     const EMPTY_TOP_ROW:    EmptySymbols = EmptySymbols { left: Self::EMPTY_TOP_LEFT,    mid: Self::EMPTY_TOP,    right: Self::EMPTY_TOP_RIGHT    };
     const EMPTY_ROW:        EmptySymbols = EmptySymbols { left: Self::EMPTY_LEFT,        mid: Self::EMPTY,        right: Self::EMPTY_RIGHT        };
     const EMPTY_BOTTOM_ROW: EmptySymbols = EmptySymbols { left: Self::EMPTY_BOTTOM_LEFT, mid: Self::EMPTY_BOTTOM, right: Self::EMPTY_BOTTOM_RIGHT };
- }
+}

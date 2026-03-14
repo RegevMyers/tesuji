@@ -25,10 +25,14 @@ set shell := [ "bash", "-cu" ]
 @clean:
     cargo clean --quiet
 
+# Fetch
+[group("vcs")]
+@fetch:
+    git fetch
+
 # Pull
 [group("vcs")]
-@pull:
-    git fetch
+@pull: (fetch)
     git pull origin HEAD
 
 # Push
@@ -37,6 +41,11 @@ set shell := [ "bash", "-cu" ]
     git add -A
     git commit -m "{{ msg }}"
     git push origin HEAD
+
+# New branch
+[group("vcs")]
+@new-branch name: (fetch)
+    git switch -c {{ name }} origin/dev
 
 # Format
 [group("lint")]
