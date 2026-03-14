@@ -1,6 +1,11 @@
 [package]
 name = "tesuji"
 version = "0.0.0"
+description = "A Go client for the Terminal"
+repository = "https://github.com/RegevMyers/tesuji"
+readme = "README.md"
+license = "AGPLv3"
+keywords = [ "go", "game", "tui", "baduk", "weiqi" ]
 edition = "2024"
 
 [dependencies]
