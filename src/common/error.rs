@@ -13,7 +13,7 @@ pub enum Error {
     #[error("Sgf: {0}")]
     Sgf(#[from] SgfParseError),
 
-    #[error("Io: {0}")]
+    #[error("IO: {0}")]
     Io(#[from] io::Error),
 }
 
