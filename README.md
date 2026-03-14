@@ -4,7 +4,16 @@
 
 # Tesuji
 
-`tesuji` is a terminal application for playing Go/WeiQi/Baduk online in [OGS](https://online-go.com/).
+`tesuji` is a TUI application for playing Go/WeiQi/Baduk online in [OGS](https://online-go.com/).
+
+---
+
+# How to Run
+
+``` bash
+cargo install just
+just run
+```
 
 ---
 

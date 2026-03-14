@@ -1,35 +1,27 @@
-# Basic SGF Visualizer
+# Basic SGF Renderer
+
+Application that gets GameId from the command line and renders it, works during the game and with end-of-game annotations
 
 - [x] Hello world
-- [x] Read [SGF FF[4]](https://www.red-bean.com/sgf/index.html)
-- [ ] Read file from disk
-- [ ] Parser: Only down to property indentifiers and values, treat all properties as unknown except simple stone placment
-  - [ ] Collection 
-  - [ ] GameTree
-  - [ ] Sequence
-  - [ ] Node
-  - [ ] Property
-  - [ ] PropIdent
-  - [ ] PropValue
-  - [ ] CValueType
-  - [ ] ValueType
-- [ ] Add location & input to parse errors
-
----   
-
-- [ ] Engine: Play out (root) game tree and calucate game state, stones only
-- [ ] Visualizer: Again, stones only
-- [ ] Tests: Add test for basic properties
+- [x] Read file from disk
+- [x] Parse SGF using `sgf-parse`
+- [x] Print Goban
+- [ ] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
+- [ ] Get gameId from cmdline and get sgf from server
+- [ ] Tests: Yeah ...
 - [ ] Use Ratatui
-- [ ] Parser: Parse all [general](https://www.red-bean.com/sgf/properties.html) and [go specific (GM[1])](https://www.red-bean.com/sgf/go.html#properties) properties
-- [ ] Engine: Output all move types, include `Info` (etc.) data too?
-- [ ] Visualizer: visualize all `Move`, `Setup`, `Root` and `Info` properties (?), as well as everything needed for end-of-game annotations
+- [ ] Renderer: visualize more nodes `Move`, `Setup`, `Root` and `Info` properties (?)
+- [ ] Renderer: Get a end-of-game sgf and visualize it
 - [ ] Tests: Test!
+- [ ] Make src/common/logging.rs a macro monster
 
 # Basic OGS Client
 
 - [ ] Go over [OGS API Docs](https://online-go.com/api-docs/)
+- [ ] Add as a workspace
+- [ ] Loop: just show the json
 - [ ] Basic client: Track a game (by ID), show game state and visualize board
+- [ ] Use ratatui
 - [ ] User input: Create input window below board
 - [ ] User input: Parse user input, allow just moves, and make them
 - [ ] Show more info about the game
@@ -37,8 +29,9 @@
 - [ ] Support listing and choosing games from games the user participates in
 - [ ] Support creating games
 
-# Apt Pkg
+# Pkg
 
+- [ ] Package as a `cargo` binary
 - [ ] Package as an `apt` package
 - [ ] Upload to a local repo and manually test
 
@@ -54,7 +47,6 @@
 
 # Variations
 
-- [ ] Parse variations
-- [ ] Visualize tree structure
+- [ ] Render tree structure
 - [ ] Enable traversing tree with arrow keys
 
