@@ -6,6 +6,7 @@ Application that gets GameId from the command line and renders it, works during 
 - [x] Read file from disk
 - [x] Parse SGF using `sgf-parse`
 - [x] Print Goban
+- [ ] Star Points
 - [ ] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
 - [ ] Get gameId from cmdline and get sgf from server
 - [ ] Tests: Yeah ...
