@@ -33,8 +33,7 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
     let board = sgf::Board::new(main_variation.collect())?;
     println!("\n{}", board);
 
-    Err(io::Error::new(std::io::ErrorKind::NotFound, "a").into())
-    //Ok(())
+    Ok(())
 }
 
 fn main() {
