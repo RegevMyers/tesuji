@@ -1,6 +1,7 @@
-# Basic SGF Renderer
+# Basic SGF Renderer - Passive Client
 
-Application that gets GameId from the command line and renders it, works during the game and with end-of-game annotations
+Application that gets GameId from the command line and renders it, works during the game and with end-of-game annotations.
+This is a passive client that just renders the game while its played, with no user iteraction.
 
 - [x] Hello world
 - [x] Read file from disk
