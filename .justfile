@@ -42,11 +42,6 @@ set shell := [ "bash", "-cu" ]
     git commit -m "{{ msg }}"
     git push origin HEAD
 
-# New branch
-[group("vcs")]
-@new-branch name: (fetch)
-    git switch -c {{ name }} origin/dev
-
 # Format
 [group("lint")]
 @fmt: 
