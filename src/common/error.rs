@@ -10,10 +10,10 @@ pub enum Error {
     #[error("{0}")]
     Message(String),
 
-    #[error(transparent)]
+    #[error("Sgf: {0}")]
     Sgf(#[from] SgfParseError),
 
-    #[error(transparent)]
+    #[error("Io: {0}")]
     Io(#[from] io::Error),
 }
 
