@@ -70,7 +70,7 @@ impl Board {
             x <= 19 && y <= 19
         };
 
-        match *(node.get_move()?) {
+        match *node.get_move()? {
             Prop::B(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, Move::Pass)),
             Prop::W(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, Move::Pass)),
             Prop::B(r#move) => Some((Color::Black, r#move)),
@@ -113,27 +113,36 @@ impl fmt::Display for Board {
     }
 }
 
+enum Connect {
+    Yes,
+    No,
+}
+
 impl Board {
     fn print_row(row: &Vec<&Intersection>, empty_symbols: EmptySymbols, formatter: &mut fmt::Formatter) -> fmt::Result {
         if let Some((first, mid, last)) = row.as_slice().split_ends() {
-            write!(formatter, "{}{}", Self::display_intersection(first, empty_symbols.left), Self::CONNECTOR)?;
+            Self::print_intersection(first, empty_symbols.left, Self::CONNECTOR, formatter)?;
 
             for intersection in mid {
-                write!(formatter, "{}{}", Self::display_intersection(intersection, empty_symbols.mid), Self::CONNECTOR)?;
+                Self::print_intersection(intersection, empty_symbols.mid, Self::CONNECTOR, formatter)?;
             }
 
-            writeln!(formatter, "{}", Self::display_intersection(last, empty_symbols.right))?;
+            Self::print_intersection(last, empty_symbols.right, Self::NEW_LINE, formatter)?;
         }
 
         Ok(())
     }
 
-    fn display_intersection(intersection: &Intersection, empty: char) -> char {
-        match intersection {
+    fn print_intersection(intersection: &Intersection, empty: char, connector: char, formatter: &mut fmt::Formatter) -> fmt::Result {
+        let symbol = match intersection {
             Some(Color::Black) => Self::BLACK_CIRCLE,
             Some(Color::White) => Self::WHITE_CIRCLE,
             None => empty,
-        }
+        };
+
+        write!(formatter, "{}{}", symbol, connector)?;
+
+        Ok(())
     }
 }
 
@@ -141,10 +150,6 @@ impl Board {
 impl Board {
     const BLACK_CIRCLE: char        = '\u{25EF}'; // ◯
     const WHITE_CIRCLE: char        = '\u{2B24}'; // ⬤
-
-    const CONNECTOR: char           = '\u{2500}'; // ─
-
-    const STAR: char                = '\u{256C}'; // ╬
 
     const EMPTY_TOP_LEFT: char      = '\u{250C}'; // ┌
     const EMPTY_TOP: char           = '\u{252C}'; // ┬
@@ -158,6 +163,12 @@ impl Board {
     const EMPTY_BOTTOM: char        = '\u{2534}'; // ┴
     const EMPTY_BOTTOM_RIGHT: char  = '\u{2518}'; // ┘
     
+    const STAR: char                = '\u{256C}'; // ╬
+                                                  
+    const CONNECTOR: char           = '\u{2500}'; // ─
+                                                  
+    const NEW_LINE: char            = '\n';
+
     const EMPTY_TOP_ROW:    EmptySymbols = EmptySymbols { left: Self::EMPTY_TOP_LEFT,    mid: Self::EMPTY_TOP,    right: Self::EMPTY_TOP_RIGHT    };
     const EMPTY_ROW:        EmptySymbols = EmptySymbols { left: Self::EMPTY_LEFT,        mid: Self::EMPTY,        right: Self::EMPTY_RIGHT        };
     const EMPTY_BOTTOM_ROW: EmptySymbols = EmptySymbols { left: Self::EMPTY_BOTTOM_LEFT, mid: Self::EMPTY_BOTTOM, right: Self::EMPTY_BOTTOM_RIGHT };
