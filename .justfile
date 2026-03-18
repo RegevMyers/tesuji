@@ -28,7 +28,7 @@ set shell := [ "bash", "-cu" ]
 # Fetch
 [group("vcs")]
 @fetch:
-    git fetch
+    git fetch origin
 
 # Pull
 [group("vcs")]
