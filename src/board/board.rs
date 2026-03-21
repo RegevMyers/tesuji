@@ -109,12 +109,12 @@ impl Board {
         };
 
         match *node.get_move()? {
+            Prop::B(Move::Pass) => Some((Color::Black, None)),
+            Prop::W(Move::Pass) => Some((Color::White, None)),
             Prop::B(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, None)),
             Prop::W(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, None)),
             Prop::B(Move::Move(Point { x, y })) => Some((Color::Black, Some((x.into(), y.into())))),
             Prop::W(Move::Move(Point { x, y })) => Some((Color::White, Some((x.into(), y.into())))),
-            Prop::B(Move::Pass) => Some((Color::Black, None)),
-            Prop::W(Move::Pass) => Some((Color::White, None)),
             _ => None,
         }
     }
