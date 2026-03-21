@@ -67,4 +67,4 @@ set shell := [ "bash", "-cu" ]
 # Lines of Code
 [group("util")]
 @loc:
-    wc -l $(fdfind '.rs' -E 'mod.rs')
+    wc -l $(fdfind -e rs -E mod.rs)
