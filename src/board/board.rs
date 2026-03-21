@@ -78,13 +78,13 @@ impl Board {
     fn get_stars(dimensions: (usize, usize)) -> Vec<(usize, usize)> {
         let (board_x, board_y) = dimensions;
 
-        let rel_tl = |(x, y): (usize, usize)| (x, y);
-        let rel_tr = |(x, y): (usize, usize)| (x, board_y - y - 1);
-        let rel_bl = |(x, y): (usize, usize)| (board_x - x - 1, y);
-        let rel_br = |(x, y): (usize, usize)| (board_x - x - 1, board_y - y - 1);
+        let top_left = |(x, y): (usize, usize)| (x, y);
+        let top_right = |(x, y): (usize, usize)| (x, board_y - y - 1);
+        let bottom_left = |(x, y): (usize, usize)| (board_x - x - 1, y);
+        let bottom_right = |(x, y): (usize, usize)| (board_x - x - 1, board_y - y - 1);
 
         let center = |(x, y): (usize, usize)| vec![(x / 2, y / 2)];
-        let corners = |(x, y): (usize, usize)| vec![rel_tl((x, y)), rel_tr((x, y)), rel_bl((x, y)), rel_br((x, y))];
+        let corners = |(x, y): (usize, usize)| vec![top_left((x, y)), top_right((x, y)), bottom_left((x, y)), bottom_right((x, y))];
         let sides = |(x, y): (usize, usize)| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
 
         let mut stars = match dimensions {
