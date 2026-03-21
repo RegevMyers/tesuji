@@ -64,3 +64,7 @@ set shell := [ "bash", "-cu" ]
     just clippy
     just test
 
+# Lines of Code
+[group("util")]
+@loc:
+    wc -l $(fdfind '.rs' -E 'mod.rs')
