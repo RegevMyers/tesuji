@@ -57,7 +57,7 @@ set shell := [ "bash", "-cu" ]
 @clippy-fix:
     cargo clippy --quiet --fix --bin tesuji -p tesuji
 
-# `fmt`, `clippy` and `test`
+# Run `fmt`, `clippy` and `test`
 [group("lint")]
 @ci: 
     just fmt
