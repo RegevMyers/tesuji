@@ -61,6 +61,8 @@ impl Board {
     }
 }
 
+type SetupMove = (Option<Color>, Vec<(usize, usize)>);
+
 impl Board {
     fn get_dimensions(root: &GoNode) -> Result<(usize, usize), Error> {
         if !root.is_root {
@@ -117,10 +119,10 @@ impl Board {
         }
     }
 
-    fn get_setup_moves(node: &GoNode) -> Vec<(Option<Color>, Vec<(usize, usize)>)> {
+    fn get_setup_moves(node: &GoNode) -> Vec<SetupMove> {
         let setup_properties = node.properties().find(|prop| prop.property_type() == Some(PropertyType::Setup));
 
-        let to_coordinates = |points: &HashSet<Point>| points.into_iter().map(|&Point { x, y }| (x.into(), y.into())).collect();
+        let to_coordinates = |points: &HashSet<Point>| points.iter().map(|&Point { x, y }| (x.into(), y.into())).collect();
 
         setup_properties
             .into_iter()
@@ -211,11 +213,11 @@ impl Board {
     const EMPTY_BOTTOM_LEFT: char   = '\u{2514}'; // └
     const EMPTY_BOTTOM: char        = '\u{2534}'; // ┴
     const EMPTY_BOTTOM_RIGHT: char  = '\u{2518}'; // ┘
-    
+
     const STAR: char                = '\u{256C}'; // ╬
-                                                  
+
     const CONNECTOR: char           = '\u{2500}'; // ─
-                                                  
+
     const NEW_LINE: char            = '\n';
 
     const EMPTY_TOP_ROW:    EmptySymbols = EmptySymbols { left: Self::EMPTY_TOP_LEFT,    mid: Self::EMPTY_TOP,    right: Self::EMPTY_TOP_RIGHT    };
