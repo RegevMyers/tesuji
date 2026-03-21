@@ -7,7 +7,7 @@ This is a passive client that just renders the game while its played, with no us
 - [x] Read file from disk
 - [x] Parse SGF using `sgf-parse`
 - [x] Print Goban
-- [ ] Star Points
+- [x] Star Points
 - [ ] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
 - [ ] Get gameId from cmdline and get sgf from server
 - [ ] Tests: Yeah ...
@@ -16,6 +16,7 @@ This is a passive client that just renders the game while its played, with no us
 - [ ] Renderer: Get a end-of-game sgf and visualize it
 - [ ] Tests: Test!
 - [ ] Make src/common/logging.rs a macro monster
+- [ ] Can `Board::Display` and `Board::print_row` work with iterators, so there is no need to collect the rows?
 
 # Basic OGS Client
 

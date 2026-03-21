@@ -1,5 +1,3 @@
-use crate::board::Intersection;
-
 use array2d::Array2D;
 use sgf_parse::go::{Move, Point, Prop};
 use sgf_parse::{PropertyType, SgfNode, SgfProp};
@@ -9,6 +7,17 @@ use crate::common::{Color, Error, SplitEnds, log};
 use std::collections::HashSet;
 use std::fmt;
 
+#[derive(Copy, Clone)]
+pub struct Intersection {
+    pub stone: Option<Color>,
+    pub star: bool,
+}
+
+impl Default for Intersection {
+    fn default() -> Self {
+        Intersection { stone: None, star: false }
+    }
+}
 pub struct Board {
     board: Array2D<Intersection>,
 }
@@ -37,13 +46,13 @@ impl Board {
 
             log::trace(&format!("Node | Move: {:?}, Setup: {:?}", r#move, setup_moves));
 
-            if let Some((color, Move::Move(Point { x, y }))) = r#move {
-                board[(x.into(), y.into())] = Intersection { stone: Some(color), star: false };
+            if let Some((color, Some((x, y)))) = r#move {
+                board[(x, y)] = Intersection { stone: Some(color), star: false };
             }
 
             for (color, points) in setup_moves {
-                for Point { x, y } in points {
-                    board[(x.into(), y.into())] = Intersection { stone: color, star: false };
+                for (x, y) in points {
+                    board[(x, y)] = Intersection { stone: color, star: false };
                 }
             }
         }
@@ -91,30 +100,34 @@ impl Board {
         stars.into_iter().flatten().collect()
     }
 
-    fn get_move(node: &GoNode, dimensions: (usize, usize)) -> Option<(Color, Move)> {
+    fn get_move(node: &GoNode, dimensions: (usize, usize)) -> Option<(Color, Option<(usize, usize)>)> {
         let is_normal_board_size = {
             let (x, y) = dimensions;
             x <= 19 && y <= 19
         };
 
         match *node.get_move()? {
-            Prop::B(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, Move::Pass)),
-            Prop::W(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, Move::Pass)),
-            Prop::B(r#move) => Some((Color::Black, r#move)),
-            Prop::W(r#move) => Some((Color::White, r#move)),
+            Prop::B(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, None)),
+            Prop::W(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, None)),
+            Prop::B(Move::Move(Point { x, y })) => Some((Color::Black, Some((x.into(), y.into())))),
+            Prop::W(Move::Move(Point { x, y })) => Some((Color::White, Some((x.into(), y.into())))),
+            Prop::B(Move::Pass) => Some((Color::Black, None)),
+            Prop::W(Move::Pass) => Some((Color::White, None)),
             _ => None,
         }
     }
 
-    fn get_setup_moves(node: &GoNode) -> Vec<(Option<Color>, HashSet<Point>)> {
+    fn get_setup_moves(node: &GoNode) -> Vec<(Option<Color>, Vec<(usize, usize)>)> {
         let setup_properties = node.properties().find(|prop| prop.property_type() == Some(PropertyType::Setup));
+
+        let to_coordinates = |points: &HashSet<Point>| points.into_iter().map(|&Point { x, y }| (x.into(), y.into())).collect();
 
         setup_properties
             .into_iter()
             .filter_map(|prop| match prop {
-                Prop::AB(points) => Some((Some(Color::Black), points.clone())),
-                Prop::AW(points) => Some((Some(Color::White), points.clone())),
-                Prop::AE(points) => Some((None, points.clone())),
+                Prop::AB(points) => Some((Some(Color::Black), to_coordinates(points))),
+                Prop::AW(points) => Some((Some(Color::White), to_coordinates(points))),
+                Prop::AE(points) => Some((None, to_coordinates(points))),
                 _ => None,
             })
             .collect()
@@ -136,7 +149,7 @@ impl Board {
 
 impl fmt::Display for Board {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        // Note that the Array2D and graphical notion of "row" and "col" are inverse.
+        // Note the Array2D and graphical notion of "row" and "col" are inverse.
         let rows: Vec<Vec<&Intersection>> = self.board.columns_iter().map(|row| row.collect()).collect();
 
         if let Some((top, mid, bottom)) = rows.as_slice().split_ends() {
