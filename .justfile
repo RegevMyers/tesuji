@@ -37,7 +37,7 @@ set shell := [ "bash", "-cu" ]
 
 # Push
 [group("vcs")]
-@push msg: (ci)
+@push +msg: (ci)
     git add -A
     git commit -m "{{ msg }}"
     git push origin HEAD
