@@ -2,8 +2,6 @@ mod board;
 mod cli;
 mod common;
 
-use crate::board::Board;
-
 use clap::Parser;
 use sgf_parse::go as parser;
 
@@ -32,7 +30,7 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
     let root = collection.first().ok_or(Error::message("Empty collection"))?;
     let main_variation = root.main_variation();
 
-    let board = Board::new(main_variation.collect())?;
+    let board = board::Board::new(main_variation.collect())?;
     println!("\n{}", board);
 
     Ok(())

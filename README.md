@@ -10,9 +10,17 @@
 
 # How to Run
 
+## Just
+
 ``` bash
 cargo install just
 just run
+```
+
+## Cargo
+
+``` bash
+cargo run
 ```
 
 ---

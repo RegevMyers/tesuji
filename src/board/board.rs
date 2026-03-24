@@ -7,8 +7,17 @@ use crate::common::{Color, Error, SplitEnds, log};
 use std::collections::HashSet;
 use std::fmt;
 
-type Intersection = Option<Color>;
+#[derive(Copy, Clone)]
+pub struct Intersection {
+    pub stone: Option<Color>,
+    pub star: bool,
+}
 
+impl Default for Intersection {
+    fn default() -> Self {
+        Intersection { stone: None, star: false }
+    }
+}
 pub struct Board {
     board: Array2D<Intersection>,
 }
@@ -20,28 +29,30 @@ struct EmptySymbols {
     right: char,
 }
 
+type GoNode = SgfNode<Prop>;
+
 impl Board {
     pub fn new(nodes: Vec<&GoNode>) -> Result<Self, Error> {
         let root = nodes.first().ok_or(Error::message("No nodes"))?;
 
-        let (board_x, board_y) = Self::get_board_dimensions(root)?;
-        let mut board = Array2D::filled_with(None, board_x, board_y);
+        let dimensions = Self::get_dimensions(root)?;
+        let mut board = Self::initial_board(dimensions);
 
-        log::info(&format!("Board | Dimensions: {}-{}", board_x, board_y));
+        log::info(&format!("Board | Dimensions: {:?}", dimensions));
 
         for node in nodes {
-            let r#move = Self::get_move(node, (board_x, board_y));
-            let setup_moves = Self::get_setups(node);
+            let r#move = Self::get_move(node, dimensions);
+            let setup_moves = Self::get_setup_moves(node);
 
             log::trace(&format!("Node | Move: {:?}, Setup: {:?}", r#move, setup_moves));
 
-            if let Some((color, Move::Move(Point { x, y }))) = r#move {
-                board[(x.into(), y.into())] = Some(color);
+            if let Some((color, Some((x, y)))) = r#move {
+                board[(x, y)] = Intersection { stone: Some(color), star: false };
             }
 
             for (color, points) in setup_moves {
-                for Point { x, y } in points {
-                    board[(x.into(), y.into())] = color;
+                for (x, y) in points {
+                    board[(x, y)] = Intersection { stone: color, star: false };
                 }
             }
         }
@@ -50,10 +61,10 @@ impl Board {
     }
 }
 
-type GoNode = SgfNode<Prop>;
+type SetupMove = (Option<Color>, Vec<(usize, usize)>);
 
 impl Board {
-    fn get_board_dimensions(root: &GoNode) -> Result<(usize, usize), Error> {
+    fn get_dimensions(root: &GoNode) -> Result<(usize, usize), Error> {
         if !root.is_root {
             return Err(Error::message("Node is not root node"));
         }
@@ -64,40 +75,84 @@ impl Board {
         }
     }
 
-    fn get_move(node: &GoNode, board_dimensions: (usize, usize)) -> Option<(Color, Move)> {
+    fn get_stars(dimensions: (usize, usize)) -> Vec<(usize, usize)> {
+        let (board_x, board_y) = dimensions;
+
+        let top_left = |(x, y): (usize, usize)| (x, y);
+        let top_right = |(x, y): (usize, usize)| (x, board_y - y - 1);
+        let bottom_left = |(x, y): (usize, usize)| (board_x - x - 1, y);
+        let bottom_right = |(x, y): (usize, usize)| (board_x - x - 1, board_y - y - 1);
+
+        let center = |(x, y): (usize, usize)| vec![(x / 2, y / 2)];
+        let corners = |(x, y): (usize, usize)| vec![top_left((x, y)), top_right((x, y)), bottom_left((x, y)), bottom_right((x, y))];
+        let sides = |(x, y): (usize, usize)| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
+
+        let mut stars = match dimensions {
+            (x, y) if x <= 5 || y <= 5 => vec![],
+            (x, y) if x <= 13 || y <= 13 => vec![corners((2, 2))],
+            (x, y) => vec![corners((3, 3)), sides((x, y))],
+        };
+
+        let is_even = |(x, y)| x % 2 == 0 || y % 2 == 0;
+
+        if !is_even(dimensions) {
+            stars.push(center(dimensions))
+        }
+
+        stars.into_iter().flatten().collect()
+    }
+
+    fn get_move(node: &GoNode, dimensions: (usize, usize)) -> Option<(Color, Option<(usize, usize)>)> {
         let is_normal_board_size = {
-            let (x, y) = board_dimensions;
+            let (x, y) = dimensions;
             x <= 19 && y <= 19
         };
 
-        match *(node.get_move()?) {
-            Prop::B(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, Move::Pass)),
-            Prop::W(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, Move::Pass)),
-            Prop::B(r#move) => Some((Color::Black, r#move)),
-            Prop::W(r#move) => Some((Color::White, r#move)),
+        match *node.get_move()? {
+            Prop::B(Move::Pass) => Some((Color::Black, None)),
+            Prop::W(Move::Pass) => Some((Color::White, None)),
+            Prop::B(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, None)),
+            Prop::W(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, None)),
+            Prop::B(Move::Move(Point { x, y })) => Some((Color::Black, Some((x.into(), y.into())))),
+            Prop::W(Move::Move(Point { x, y })) => Some((Color::White, Some((x.into(), y.into())))),
             _ => None,
         }
     }
 
-    fn get_setups(node: &GoNode) -> Vec<(Option<Color>, HashSet<Point>)> {
+    fn get_setup_moves(node: &GoNode) -> Vec<SetupMove> {
         let setup_properties = node.properties().find(|prop| prop.property_type() == Some(PropertyType::Setup));
+
+        let to_coordinates = |points: &HashSet<Point>| points.iter().map(|&Point { x, y }| (x.into(), y.into())).collect();
 
         setup_properties
             .into_iter()
             .filter_map(|prop| match prop {
-                Prop::AB(points) => Some((Some(Color::Black), points.clone())),
-                Prop::AW(points) => Some((Some(Color::White), points.clone())),
-                Prop::AE(points) => Some((None, points.clone())),
+                Prop::AB(points) => Some((Some(Color::Black), to_coordinates(points))),
+                Prop::AW(points) => Some((Some(Color::White), to_coordinates(points))),
+                Prop::AE(points) => Some((None, to_coordinates(points))),
                 _ => None,
             })
             .collect()
     }
 }
 
+impl Board {
+    fn initial_board(dimensions: (usize, usize)) -> Array2D<Intersection> {
+        let (x, y) = dimensions;
+        let mut board = Array2D::filled_with(Intersection::default(), x, y);
+
+        for star in Self::get_stars(dimensions) {
+            board[star].star = true;
+        }
+
+        board
+    }
+}
+
 impl fmt::Display for Board {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        // Note that the Array2D and graphical notion of "row" and "col" are inverse.
-        let rows: Vec<Vec<&Option<Color>>> = self.board.columns_iter().map(|row| row.collect()).collect();
+        // Note the Array2D and graphical notion of "row" and "col" are inverse.
+        let rows: Vec<Vec<&Intersection>> = self.board.columns_iter().map(|row| row.collect()).collect();
 
         if let Some((top, mid, bottom)) = rows.as_slice().split_ends() {
             Self::print_row(top, Self::EMPTY_TOP_ROW, formatter)?;
@@ -116,24 +171,29 @@ impl fmt::Display for Board {
 impl Board {
     fn print_row(row: &Vec<&Intersection>, empty_symbols: EmptySymbols, formatter: &mut fmt::Formatter) -> fmt::Result {
         if let Some((first, mid, last)) = row.as_slice().split_ends() {
-            write!(formatter, "{}{}", Self::display_intersection(first, empty_symbols.left), Self::CONNECTOR)?;
+            Self::print_intersection(first, empty_symbols.left, Self::CONNECTOR, formatter)?;
 
             for intersection in mid {
-                write!(formatter, "{}{}", Self::display_intersection(intersection, empty_symbols.mid), Self::CONNECTOR)?;
+                Self::print_intersection(intersection, empty_symbols.mid, Self::CONNECTOR, formatter)?;
             }
 
-            writeln!(formatter, "{}", Self::display_intersection(last, empty_symbols.right))?;
+            Self::print_intersection(last, empty_symbols.right, Self::NEW_LINE, formatter)?;
         }
 
         Ok(())
     }
 
-    fn display_intersection(intersection: &Intersection, empty: char) -> char {
-        match intersection {
+    fn print_intersection(intersection: &Intersection, empty: char, connector: char, formatter: &mut fmt::Formatter) -> fmt::Result {
+        let symbol = match intersection.stone {
             Some(Color::Black) => Self::BLACK_CIRCLE,
             Some(Color::White) => Self::WHITE_CIRCLE,
+            None if intersection.star => Self::STAR,
             None => empty,
-        }
+        };
+
+        write!(formatter, "{}{}", symbol, connector)?;
+
+        Ok(())
     }
 }
 
@@ -142,22 +202,25 @@ impl Board {
     const BLACK_CIRCLE: char        = '\u{25EF}'; // ◯
     const WHITE_CIRCLE: char        = '\u{2B24}'; // ⬤
 
-    const CONNECTOR: char           = '\u{2500}'; // ─
-
     const EMPTY_TOP_LEFT: char      = '\u{250C}'; // ┌
     const EMPTY_TOP: char           = '\u{252C}'; // ┬
     const EMPTY_TOP_RIGHT: char     = '\u{2510}'; // ┐
 
     const EMPTY_LEFT: char          = '\u{251C}'; // ├ 
     const EMPTY: char               = '\u{253C}'; // ┼
-    const EMPTY_STAR: char          = '\u{256C}'; // ╬
     const EMPTY_RIGHT: char         = '\u{2524}'; // ┤
 
     const EMPTY_BOTTOM_LEFT: char   = '\u{2514}'; // └
     const EMPTY_BOTTOM: char        = '\u{2534}'; // ┴
     const EMPTY_BOTTOM_RIGHT: char  = '\u{2518}'; // ┘
-    
+
+    const STAR: char                = '\u{256C}'; // ╬
+
+    const CONNECTOR: char           = '\u{2500}'; // ─
+
+    const NEW_LINE: char            = '\n';
+
     const EMPTY_TOP_ROW:    EmptySymbols = EmptySymbols { left: Self::EMPTY_TOP_LEFT,    mid: Self::EMPTY_TOP,    right: Self::EMPTY_TOP_RIGHT    };
     const EMPTY_ROW:        EmptySymbols = EmptySymbols { left: Self::EMPTY_LEFT,        mid: Self::EMPTY,        right: Self::EMPTY_RIGHT        };
     const EMPTY_BOTTOM_ROW: EmptySymbols = EmptySymbols { left: Self::EMPTY_BOTTOM_LEFT, mid: Self::EMPTY_BOTTOM, right: Self::EMPTY_BOTTOM_RIGHT };
- }
+}

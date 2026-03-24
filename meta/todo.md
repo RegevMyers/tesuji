@@ -1,11 +1,13 @@
-# Basic SGF Renderer
+# Basic SGF Renderer - Passive Client
 
-Application that gets GameId from the command line and renders it, works during the game and with end-of-game annotations
+Application that gets GameId from the command line and renders it, works during the game and with end-of-game annotations.
+This is a passive client that just renders the game while its played, with no user iteraction.
 
 - [x] Hello world
 - [x] Read file from disk
 - [x] Parse SGF using `sgf-parse`
 - [x] Print Goban
+- [x] Star Points
 - [ ] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
 - [ ] Get gameId from cmdline and get sgf from server
 - [ ] Tests: Yeah ...
@@ -14,6 +16,7 @@ Application that gets GameId from the command line and renders it, works during 
 - [ ] Renderer: Get a end-of-game sgf and visualize it
 - [ ] Tests: Test!
 - [ ] Make src/common/logging.rs a macro monster
+- [ ] Can `Board::Display` and `Board::print_row` work with iterators, so there is no need to collect the rows?
 
 # Basic OGS Client
 

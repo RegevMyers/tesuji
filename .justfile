@@ -25,15 +25,19 @@ set shell := [ "bash", "-cu" ]
 @clean:
     cargo clean --quiet
 
+# Fetch
+[group("vcs")]
+@fetch:
+    git fetch origin
+
 # Pull
 [group("vcs")]
-@pull:
-    git fetch
+@pull: (fetch)
     git pull origin HEAD
 
 # Push
 [group("vcs")]
-@push msg: (ci)
+@push +msg: (ci)
     git add -A
     git commit -m "{{ msg }}"
     git push origin HEAD
@@ -53,10 +57,14 @@ set shell := [ "bash", "-cu" ]
 @clippy-fix:
     cargo clippy --quiet --fix --bin tesuji -p tesuji
 
-# `fmt`, `clippy` and `test`
+# Run `fmt`, `clippy` and `test`
 [group("lint")]
 @ci: 
     just fmt
     just clippy
     just test
 
+# Lines of Code
+[group("util")]
+@loc:
+    wc -l $(fdfind -e rs -E mod.rs)
