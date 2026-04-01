@@ -22,42 +22,52 @@ pub struct Board {
     board: Array2D<Intersection>,
 }
 
-#[derive(Copy, Clone)]
-struct EmptySymbols {
-    left: char,
-    mid: char,
-    right: char,
-}
-
 type GoNode = SgfNode<Prop>;
 
 impl Board {
-    pub fn new(nodes: Vec<&GoNode>) -> Result<Self, Error> {
-        let root = nodes.first().ok_or(Error::message("No nodes"))?;
-
+    pub fn new(root: &GoNode) -> Result<Self, Error> {
         let dimensions = Self::get_dimensions(root)?;
-        let mut board = Self::initial_board(dimensions);
+        let board = Self::initial_board(dimensions);
 
         log::info(&format!("Board | Dimensions: {:?}", dimensions));
 
+        Ok(Self { board })
+    }
+
+    pub fn apply_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
         for node in nodes {
+            let dimensions = (self.board.num_rows(), self.board.num_columns());
+
             let r#move = Self::get_move(node, dimensions);
             let setup_moves = Self::get_setup_moves(node);
 
             log::trace(&format!("Node | Move: {:?}, Setup: {:?}", r#move, setup_moves));
 
             if let Some((color, Some((x, y)))) = r#move {
-                board[(x, y)] = Intersection { stone: Some(color), star: false };
+                self.board[(x, y)] = Intersection { stone: Some(color), star: false };
             }
 
             for (color, points) in setup_moves {
                 for (x, y) in points {
-                    board[(x, y)] = Intersection { stone: color, star: false };
+                    self.board[(x, y)] = Intersection { stone: color, star: false };
                 }
             }
         }
 
-        Ok(Self { board })
+        Ok(())
+    }
+}
+
+impl Board {
+    fn initial_board(dimensions: (usize, usize)) -> Array2D<Intersection> {
+        let (x, y) = dimensions;
+        let mut board = Array2D::filled_with(Intersection::default(), x, y);
+
+        for star in Self::get_stars(dimensions) {
+            board[star].star = true;
+        }
+
+        board
     }
 }
 
@@ -136,19 +146,6 @@ impl Board {
     }
 }
 
-impl Board {
-    fn initial_board(dimensions: (usize, usize)) -> Array2D<Intersection> {
-        let (x, y) = dimensions;
-        let mut board = Array2D::filled_with(Intersection::default(), x, y);
-
-        for star in Self::get_stars(dimensions) {
-            board[star].star = true;
-        }
-
-        board
-    }
-}
-
 impl fmt::Display for Board {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         // Note the Array2D and graphical notion of "row" and "col" are inverse.
@@ -166,6 +163,13 @@ impl fmt::Display for Board {
 
         Ok(())
     }
+}
+
+#[derive(Copy, Clone)]
+struct EmptySymbols {
+    left: char,
+    mid: char,
+    right: char,
 }
 
 impl Board {

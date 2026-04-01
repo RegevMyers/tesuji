@@ -30,7 +30,12 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
     let root = collection.first().ok_or(Error::message("Empty collection"))?;
     let main_variation = root.main_variation();
 
-    let board = board::Board::new(main_variation.collect())?;
+    let nodes = main_variation.collect::<Vec<_>>();
+    let (root, rest) = nodes.split_first().ok_or(Error::message("No root node"))?;
+
+    let mut board = board::Board::new(root)?;
+    board.apply_nodes(rest.to_vec())?;
+
     println!("\n{}", board);
 
     Ok(())
