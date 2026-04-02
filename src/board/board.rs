@@ -18,8 +18,16 @@ impl Default for Intersection {
         Intersection { stone: None, star: false }
     }
 }
+
+#[derive(Debug)]
+struct Dimensions {
+    x: usize,
+    y: usize,
+}
+
 pub struct Board {
     board: Array2D<Intersection>,
+    dimensions: Dimensions,
 }
 
 type GoNode = SgfNode<Prop>;
@@ -27,16 +35,14 @@ type GoNode = SgfNode<Prop>;
 impl Board {
     pub fn new(root: &GoNode) -> Result<Self, Error> {
         let dimensions = Self::get_dimensions(root)?;
-        let board = Self::initial_board(dimensions);
+        let board = Self::initial_board(&dimensions);
 
-        log::info(&format!("Board | Dimensions: {:?}", dimensions));
-
-        Ok(Self { board })
+        Ok(Self { board, dimensions })
     }
 
     pub fn apply_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
         for node in nodes {
-            let dimensions = (self.board.num_rows(), self.board.num_columns());
+            let dimensions = &self.dimensions;
 
             let r#move = Self::get_move(node, dimensions);
             let setup_moves = Self::get_setup_moves(node);
@@ -59,8 +65,8 @@ impl Board {
 }
 
 impl Board {
-    fn initial_board(dimensions: (usize, usize)) -> Array2D<Intersection> {
-        let (x, y) = dimensions;
+    fn initial_board(dimensions: &Dimensions) -> Array2D<Intersection> {
+        let &Dimensions { x, y } = dimensions;
         let mut board = Array2D::filled_with(Intersection::default(), x, y);
 
         for star in Self::get_stars(dimensions) {
@@ -74,19 +80,19 @@ impl Board {
 type SetupMove = (Option<Color>, Vec<(usize, usize)>);
 
 impl Board {
-    fn get_dimensions(root: &GoNode) -> Result<(usize, usize), Error> {
+    fn get_dimensions(root: &GoNode) -> Result<Dimensions, Error> {
         if !root.is_root {
             return Err(Error::message("Node is not root node"));
         }
 
         match root.get_property("SZ") {
-            Some(&Prop::SZ((x, y))) => Ok((x.into(), y.into())),
+            Some(&Prop::SZ((x, y))) => Ok(Dimensions { x: x.into(), y: y.into() }),
             _ => Err(Error::message("Missing property in root node: SZ")),
         }
     }
 
-    fn get_stars(dimensions: (usize, usize)) -> Vec<(usize, usize)> {
-        let (board_x, board_y) = dimensions;
+    fn get_stars(dimensions: &Dimensions) -> Vec<(usize, usize)> {
+        let &Dimensions { x: board_x, y: board_y } = dimensions;
 
         let top_left = |(x, y): (usize, usize)| (x, y);
         let top_right = |(x, y): (usize, usize)| (x, board_y - y - 1);
@@ -98,23 +104,24 @@ impl Board {
         let sides = |(x, y): (usize, usize)| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
 
         let mut stars = match dimensions {
-            (x, y) if x <= 5 || y <= 5 => vec![],
-            (x, y) if x <= 13 || y <= 13 => vec![corners((2, 2))],
-            (x, y) => vec![corners((3, 3)), sides((x, y))],
+            &Dimensions { x, y } if x <= 5 || y <= 5 => vec![],
+            &Dimensions { x, y } if x <= 13 || y <= 13 => vec![corners((2, 2))],
+            &Dimensions { x, y } => vec![corners((3, 3)), sides((x, y))],
         };
 
-        let is_even = |(x, y)| x % 2 == 0 || y % 2 == 0;
+        let is_even = |&Dimensions { x, y }| x % 2 == 0 || y % 2 == 0;
 
         if !is_even(dimensions) {
-            stars.push(center(dimensions))
+            let &Dimensions { x, y } = dimensions;
+            stars.push(center((x, y)))
         }
 
         stars.into_iter().flatten().collect()
     }
 
-    fn get_move(node: &GoNode, dimensions: (usize, usize)) -> Option<(Color, Option<(usize, usize)>)> {
+    fn get_move(node: &GoNode, dimensions: &Dimensions) -> Option<(Color, Option<(usize, usize)>)> {
         let is_normal_board_size = {
-            let (x, y) = dimensions;
+            let &Dimensions { x, y } = dimensions;
             x <= 19 && y <= 19
         };
 
@@ -143,6 +150,43 @@ impl Board {
                 _ => None,
             })
             .collect()
+    }
+}
+
+type Group = HashSet<(usize, usize)>;
+
+impl Board {
+    fn play_move(&mut self, color: Color, coordinates: (usize, usize)) -> Result<(), Error> {
+        let adjacent_points = self.get_adjacent_points(coordinates);
+        let adjacent_groups = adjacent_points.into_iter().map(|point| self.get_containing_group(point)).collect::<Vec<Group>>();
+
+        for group in adjacent_groups {
+            self.try_capture(group)
+        }
+
+        let self_group = self.get_containing_group(coordinates);
+        self.try_capture(self_group);
+
+        Ok(())
+    }
+
+    fn get_adjacent_points(&self, coordinate: (usize, usize)) -> Group {
+        let possible_adjacent_points = |(x, y)| HashSet::from([(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]);
+
+        let in_board = |(x, y)| {
+            let Dimensions { x: board_x, y: board_y } = self.dimensions;
+            x < board_x && y < board_y
+        };
+
+        possible_adjacent_points(coordinate).into_iter().filter(|&xy| in_board(xy)).collect()
+    }
+
+    fn get_containing_group(&self, point: (usize, usize)) -> Group {
+        todo!()
+    }
+
+    fn try_capture(&mut self, group: Group) {
+        todo!()
     }
 }
 
