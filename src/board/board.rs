@@ -1,5 +1,5 @@
 use array2d::Array2D;
-use sgf_parse::go::{Move, Point, Prop};
+use sgf_parse::go::{Move, Point as SgfPoint, Prop};
 use sgf_parse::{PropertyType, SgfNode, SgfProp};
 
 use crate::common::{Color, Error, SplitEnds, log};
@@ -32,6 +32,9 @@ pub struct Board {
 
 type GoNode = SgfNode<Prop>;
 
+type Point = (usize, usize);
+type Group = HashSet<Point>;
+
 impl Board {
     pub fn new(root: &GoNode) -> Result<Self, Error> {
         let dimensions = Self::get_dimensions(root)?;
@@ -47,9 +50,10 @@ impl Board {
             let r#move = Self::get_move(node, dimensions);
             let setup_moves = Self::get_setup_moves(node);
 
-            log::trace(&format!("Node | Move: {:?}, Setup: {:?}", r#move, setup_moves));
+            log::trace(&format!("Node | Move: {move:?}, Setup: {setup_moves:?}"));
 
             if let Some((color, Some((x, y)))) = r#move {
+                self.play_move(color, (x, y))?;
                 self.board[(x, y)] = Intersection { stone: Some(color), star: false };
             }
 
@@ -77,7 +81,7 @@ impl Board {
     }
 }
 
-type SetupMove = (Option<Color>, Vec<(usize, usize)>);
+type SetupMove = (Option<Color>, Vec<Point>);
 
 impl Board {
     fn get_dimensions(root: &GoNode) -> Result<Dimensions, Error> {
@@ -91,17 +95,17 @@ impl Board {
         }
     }
 
-    fn get_stars(dimensions: &Dimensions) -> Vec<(usize, usize)> {
+    fn get_stars(dimensions: &Dimensions) -> Vec<Point> {
         let &Dimensions { x: board_x, y: board_y } = dimensions;
 
-        let top_left = |(x, y): (usize, usize)| (x, y);
-        let top_right = |(x, y): (usize, usize)| (x, board_y - y - 1);
-        let bottom_left = |(x, y): (usize, usize)| (board_x - x - 1, y);
-        let bottom_right = |(x, y): (usize, usize)| (board_x - x - 1, board_y - y - 1);
+        let top_left = |(x, y): Point| (x, y);
+        let top_right = |(x, y): Point| (x, board_y - y - 1);
+        let bottom_left = |(x, y): Point| (board_x - x - 1, y);
+        let bottom_right = |(x, y): Point| (board_x - x - 1, board_y - y - 1);
 
-        let center = |(x, y): (usize, usize)| vec![(x / 2, y / 2)];
-        let corners = |(x, y): (usize, usize)| vec![top_left((x, y)), top_right((x, y)), bottom_left((x, y)), bottom_right((x, y))];
-        let sides = |(x, y): (usize, usize)| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
+        let center = |(x, y): Point| vec![(x / 2, y / 2)];
+        let corners = |(x, y): Point| vec![top_left((x, y)), top_right((x, y)), bottom_left((x, y)), bottom_right((x, y))];
+        let sides = |(x, y): Point| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
 
         let mut stars = match dimensions {
             &Dimensions { x, y } if x <= 5 || y <= 5 => vec![],
@@ -119,7 +123,7 @@ impl Board {
         stars.into_iter().flatten().collect()
     }
 
-    fn get_move(node: &GoNode, dimensions: &Dimensions) -> Option<(Color, Option<(usize, usize)>)> {
+    fn get_move(node: &GoNode, dimensions: &Dimensions) -> Option<(Color, Option<Point>)> {
         let is_normal_board_size = {
             let &Dimensions { x, y } = dimensions;
             x <= 19 && y <= 19
@@ -128,10 +132,10 @@ impl Board {
         match node.get_move()? {
             &Prop::B(Move::Pass) => Some((Color::Black, None)),
             &Prop::W(Move::Pass) => Some((Color::White, None)),
-            &Prop::B(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, None)),
-            &Prop::W(Move::Move(Point { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, None)),
-            &Prop::B(Move::Move(Point { x, y })) => Some((Color::Black, Some((x.into(), y.into())))),
-            &Prop::W(Move::Move(Point { x, y })) => Some((Color::White, Some((x.into(), y.into())))),
+            &Prop::B(Move::Move(SgfPoint { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, None)),
+            &Prop::W(Move::Move(SgfPoint { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, None)),
+            &Prop::B(Move::Move(SgfPoint { x, y })) => Some((Color::Black, Some((x.into(), y.into())))),
+            &Prop::W(Move::Move(SgfPoint { x, y })) => Some((Color::White, Some((x.into(), y.into())))),
             _ => None,
         }
     }
@@ -139,55 +143,79 @@ impl Board {
     fn get_setup_moves(node: &GoNode) -> Vec<SetupMove> {
         let setup_properties = node.properties().find(|prop| prop.property_type() == Some(PropertyType::Setup));
 
-        let to_coordinates = |points: &HashSet<Point>| points.iter().map(|&Point { x, y }| (x.into(), y.into())).collect();
+        let to_points = |points: &HashSet<SgfPoint>| points.iter().map(|&SgfPoint { x, y }| (x.into(), y.into())).collect();
 
         setup_properties
             .into_iter()
             .filter_map(|prop| match prop {
-                Prop::AB(points) => Some((Some(Color::Black), to_coordinates(points))),
-                Prop::AW(points) => Some((Some(Color::White), to_coordinates(points))),
-                Prop::AE(points) => Some((None, to_coordinates(points))),
+                Prop::AB(points) => Some((Some(Color::Black), to_points(points))),
+                Prop::AW(points) => Some((Some(Color::White), to_points(points))),
+                Prop::AE(points) => Some((None, to_points(points))),
                 _ => None,
             })
             .collect()
     }
 }
 
-type Group = HashSet<(usize, usize)>;
-
 impl Board {
-    fn play_move(&mut self, color: Color, coordinates: (usize, usize)) -> Result<(), Error> {
-        let adjacent_points = self.get_adjacent_points(coordinates);
+    fn play_move(&mut self, color: Color, point: Point) -> Result<(), Error> {
+        let adjacent_points = self.get_adjacent_points(point);
         let adjacent_groups = adjacent_points.into_iter().map(|point| self.get_containing_group(point)).collect::<Vec<Group>>();
+        log::trace(&format!("Play | Adjacent groups: {adjacent_groups:?}"));
 
         for group in adjacent_groups {
             self.try_capture(group)
         }
 
-        let self_group = self.get_containing_group(coordinates);
-        self.try_capture(self_group);
+        let own_group = self.get_containing_group(point);
+        self.try_capture(own_group);
 
         Ok(())
     }
 
-    fn get_adjacent_points(&self, coordinate: (usize, usize)) -> Group {
-        let possible_adjacent_points = |(x, y)| HashSet::from([(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]);
+    fn get_adjacent_points(&self, point: Point) -> HashSet<Point> {
+        let (x, y) = point;
+        let Dimensions { x: board_x, y: board_y } = self.dimensions;
 
-        let in_board = |(x, y)| {
-            let Dimensions { x: board_x, y: board_y } = self.dimensions;
-            x < board_x && y < board_y
-        };
-
-        possible_adjacent_points(coordinate).into_iter().filter(|&xy| in_board(xy)).collect()
+        HashSet::from_iter(
+            [
+                (x != 0).then_some((x - 1, y)),
+                (y != 0).then_some((x, y - 1)),
+                (x != board_x - 1).then_some((x + 1, y)),
+                (y != board_y - 1).then_some((x, y + 1)),
+            ]
+            .into_iter()
+            .flatten(),
+        )
     }
 
-    fn get_containing_group(&self, point: (usize, usize)) -> Group {
-        todo!()
+    fn get_containing_group(&self, point: Point) -> Group {
+        let mut group = Group::new();
+
+        self.add_and_recurse(&mut group, point);
+
+        group
     }
 
-    fn try_capture(&mut self, group: Group) {
-        todo!()
+    fn add_and_recurse(&self, group: &mut Group, point: Point) {
+        if !group.contains(&point) {
+            let point_color = self.board[point].stone;
+            if point_color == None {
+                return;
+            }
+
+            group.insert(point);
+
+            for adjacent_point in self.get_adjacent_points(point) {
+                let adjacent_point_color = self.board[adjacent_point].stone;
+                if adjacent_point_color == point_color {
+                    self.add_and_recurse(group, adjacent_point);
+                }
+            }
+        }
     }
+
+    fn try_capture(&mut self, group: Group) {}
 }
 
 impl fmt::Display for Board {

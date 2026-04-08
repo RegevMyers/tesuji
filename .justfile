@@ -68,3 +68,9 @@ set shell := [ "bash", "-cu" ]
 [group("util")]
 @loc:
     wc -l $(fdfind -e rs -E mod.rs)
+
+# Clear
+[group("util")]
+@clear:
+    clear
+

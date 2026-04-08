@@ -23,7 +23,7 @@ fn read_file(path: &Path) -> Result<String, io::Error> {
 fn app(sgf_path: &Path) -> Result<(), Error> {
     log::message("Welcome to Tesuji!");
 
-    log::input(&format!("Reading: {:?}", sgf_path));
+    log::input(&format!("Reading: {sgf_path:?}"));
 
     let sgf = read_file(sgf_path)?;
     let collection = parser::parse(&sgf)?;
