@@ -198,19 +198,21 @@ impl Board {
     }
 
     fn add_and_recurse(&self, group: &mut Group, point: Point) {
-        if !group.contains(&point) {
-            let point_color = self.board[point].stone;
-            if point_color == None {
-                return;
-            }
+        if group.contains(&point) {
+            return;
+        }
 
-            group.insert(point);
+        let point_color = self.board[point].stone;
+        if point_color == None {
+            return;
+        }
 
-            for adjacent_point in self.get_adjacent_points(point) {
-                let adjacent_point_color = self.board[adjacent_point].stone;
-                if adjacent_point_color == point_color {
-                    self.add_and_recurse(group, adjacent_point);
-                }
+        group.insert(point);
+
+        for adjacent_point in self.get_adjacent_points(point) {
+            let adjacent_point_color = self.board[adjacent_point].stone;
+            if adjacent_point_color == point_color {
+                self.add_and_recurse(group, adjacent_point);
             }
         }
     }
