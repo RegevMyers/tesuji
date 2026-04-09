@@ -66,6 +66,10 @@ impl Board {
 
         Ok(())
     }
+
+    pub fn captures(&self) -> &Map<Color, usize> {
+        &self.captures
+    }
 }
 
 impl Board {
@@ -162,7 +166,7 @@ impl Board {
         self.board[point].stone = Some(color);
 
         let adjacent_points = self.get_adjacent_points(point);
-        let adjacent_groups = adjacent_points.into_iter().map(|point| self.get_containing_group(point)).flatten().collect::<Vec<Group>>();
+        let adjacent_groups = adjacent_points.into_iter().filter_map(|point| self.get_containing_group(point)).collect::<Vec<Group>>();
         log::trace(&format!("Play | Adjacent groups: {adjacent_groups:?}"));
 
         for group in adjacent_groups {
@@ -207,7 +211,7 @@ impl Board {
     fn add_and_recurse(&self, group: &mut Group, point: Point) {
         let point_color = self.board[point].stone;
 
-        if group.contains(&point) || point_color == None {
+        if group.contains(&point) || point_color.is_none() {
             return;
         }
 
@@ -228,17 +232,17 @@ impl Board {
 
         for point in group {
             if let Some(color) = self.board[point].stone {
-                self.captures.insert(color, self.captures[&color] + 1);
+                self.captures.insert(!color, self.captures[&color] + 1);
                 self.board[point].stone = None;
             }
         }
     }
 
     fn is_alive(&self, group: &Group) -> bool {
-        let group_and_bordering = group.iter().map(|point: &Point| self.get_adjacent_points(*point)).flatten().collect::<Group>();
+        let group_and_bordering = group.iter().flat_map(|point: &Point| self.get_adjacent_points(*point)).collect::<Group>();
         let bordering = &group_and_bordering - group;
 
-        bordering.into_iter().find(|point: &Point| self.board[*point].stone == None).is_some()
+        bordering.into_iter().any(|point: Point| self.board[point].stone.is_none())
     }
 }
 

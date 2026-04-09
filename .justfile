@@ -67,7 +67,7 @@ set shell := [ "bash", "-cu" ]
 # Lines of Code
 [group("util")]
 @loc:
-    wc -l $(fdfind -e rs -E mod.rs)
+    wc -l $(fdfind -e rs -E mod.rs) | sort -n -r | sed -E $'1s|(.*)|\033[1m\\1\033[0m|'
 
 # Clear
 [group("util")]
