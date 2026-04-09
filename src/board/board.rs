@@ -1,4 +1,5 @@
 use array2d::Array2D;
+use colored::{ColoredString, Colorize};
 use sgf_parse::go::{Move, Point as SgfPoint, Prop};
 use sgf_parse::{PropertyType, SgfNode, SgfProp};
 
@@ -285,13 +286,13 @@ impl Board {
 
     fn print_intersection(intersection: &Intersection, empty: char, connector: char, formatter: &mut fmt::Formatter) -> fmt::Result {
         let symbol = match intersection.stone {
-            Some(Color::Black) => Self::BLACK_CIRCLE,
-            Some(Color::White) => Self::WHITE_CIRCLE,
-            None if intersection.star => Self::STAR,
-            None => empty,
+            Some(Color::Black) => Self::BLACK_CIRCLE.to_string(),
+            Some(Color::White) => Self::WHITE_CIRCLE.to_string(),
+            None if intersection.star => Self::STAR.to_string().dimmed().white().to_string(),
+            None => empty.to_string().dimmed().white().to_string(),
         };
 
-        write!(formatter, "{}{}", symbol, connector)?;
+        write!(formatter, "{}{}", symbol, connector.to_string().dimmed().white().to_string())?;
 
         Ok(())
     }
