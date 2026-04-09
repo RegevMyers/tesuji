@@ -111,10 +111,10 @@ impl Board {
         let corners = |(x, y): Point| vec![top_left((x, y)), top_right((x, y)), bottom_left((x, y)), bottom_right((x, y))];
         let sides = |(x, y): Point| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
 
-        let mut stars = match dimensions {
-            &Dimensions { x, y } if x <= 5 || y <= 5 => vec![],
-            &Dimensions { x, y } if x <= 13 || y <= 13 => vec![corners((2, 2))],
-            &Dimensions { x, y } => vec![corners((3, 3)), sides((x, y))],
+        let mut stars = match *dimensions {
+            Dimensions { x, y } if x <= 5 || y <= 5 => vec![],
+            Dimensions { x, y } if x <= 13 || y <= 13 => vec![corners((2, 2))],
+            Dimensions { x, y } => vec![corners((3, 3)), sides((x, y))],
         };
 
         let is_even = |&Dimensions { x, y }| x % 2 == 0 || y % 2 == 0;
@@ -133,13 +133,13 @@ impl Board {
             x <= 19 && y <= 19
         };
 
-        match node.get_move()? {
-            &Prop::B(Move::Pass) => Some((Color::Black, None)),
-            &Prop::W(Move::Pass) => Some((Color::White, None)),
-            &Prop::B(Move::Move(SgfPoint { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, None)),
-            &Prop::W(Move::Move(SgfPoint { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, None)),
-            &Prop::B(Move::Move(SgfPoint { x, y })) => Some((Color::Black, Some((x.into(), y.into())))),
-            &Prop::W(Move::Move(SgfPoint { x, y })) => Some((Color::White, Some((x.into(), y.into())))),
+        match *node.get_move()? {
+            Prop::B(Move::Pass) => Some((Color::Black, None)),
+            Prop::W(Move::Pass) => Some((Color::White, None)),
+            Prop::B(Move::Move(SgfPoint { x: 19, y: 19 })) if is_normal_board_size => Some((Color::Black, None)),
+            Prop::W(Move::Move(SgfPoint { x: 19, y: 19 })) if is_normal_board_size => Some((Color::White, None)),
+            Prop::B(Move::Move(SgfPoint { x, y })) => Some((Color::Black, Some((x.into(), y.into())))),
+            Prop::W(Move::Move(SgfPoint { x, y })) => Some((Color::White, Some((x.into(), y.into())))),
             _ => None,
         }
     }

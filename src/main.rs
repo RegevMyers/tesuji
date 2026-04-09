@@ -36,7 +36,7 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
     let mut board = board::Board::new(root)?;
     board.apply_nodes(rest.to_vec())?;
 
-    println!("");
+    println!();
     println!("Black: {} | White: {}", board.captures()[&Color::Black], board.captures()[&Color::White]);
     println!("{}", board);
 
