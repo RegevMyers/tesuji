@@ -229,7 +229,7 @@ impl Board {
 
         for point in group {
             if let Some(color) = self.board[point].stone {
-                self.captures.insert(!color, self.captures[&color] + 1);
+                self.captures.insert(!color, self.captures[&!color] + 1);
                 self.board[point].stone = None;
             }
         }
