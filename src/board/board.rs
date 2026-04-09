@@ -45,14 +45,13 @@ impl Board {
             let r#move = Self::get_move(node, dimensions);
             let setup_moves = Self::get_setup_moves(node);
 
-            log::trace(&format!("Node | Move: {move:?}, Setup: {setup_moves:?}"));
-
             if let Some((color, Some((x, y)))) = r#move {
                 self.play_move(color, (x, y))?;
             }
 
             for (color, points) in setup_moves {
                 for (x, y) in points {
+                    log::trace(&format!("Setup | {color:?} @ [({x}, {y})]"));
                     self.board[(x, y)] = Intersection { stone: color, star: false };
                 }
             }
@@ -157,11 +156,12 @@ impl Board {
 
 impl Board {
     fn play_move(&mut self, color: Color, point: Point) -> Result<(), Error> {
+        log::trace(&format!("Move | {color:?} @ [{point:?}]"));
+
         self.board[point].stone = Some(color);
 
         let adjacent_points = self.get_adjacent_points(point);
         let adjacent_groups = adjacent_points.into_iter().filter_map(|point| self.get_containing_group(point)).collect::<Vec<Group>>();
-        log::trace(&format!("Play | Adjacent groups: {adjacent_groups:?}"));
 
         for group in adjacent_groups {
             self.try_capture(group)
@@ -223,6 +223,8 @@ impl Board {
         if self.is_alive(&group) {
             return;
         };
+
+        log::trace(&format!("Capture | Group: {group:?}"));
 
         for point in group {
             if let Some(color) = self.board[point].stone {
