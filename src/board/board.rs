@@ -286,13 +286,13 @@ impl Board {
 
     fn print_intersection(intersection: &Intersection, empty: char, connector: char, formatter: &mut fmt::Formatter) -> fmt::Result {
         let symbol = match intersection.stone {
-            Some(Color::Black) => Self::BLACK_CIRCLE.to_string(),
-            Some(Color::White) => Self::WHITE_CIRCLE.to_string(),
-            None if intersection.star => Self::STAR.to_string().dimmed().white().to_string(),
-            None => empty.to_string().dimmed().white().to_string(),
+            Some(Color::Black) => ColoredString::from(Self::BLACK_CIRCLE.to_string()),
+            Some(Color::White) => ColoredString::from(Self::WHITE_CIRCLE.to_string()),
+            None if intersection.star => Self::STAR.to_string().dimmed().white(),
+            None => empty.to_string().dimmed().white(),
         };
 
-        write!(formatter, "{}{}", symbol, connector.to_string().dimmed().white().to_string())?;
+        write!(formatter, "{}{}", symbol, connector.to_string().dimmed().white())?;
 
         Ok(())
     }
