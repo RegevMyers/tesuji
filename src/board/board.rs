@@ -7,16 +7,10 @@ use crate::common::{Color, Error, SplitEnds, log};
 use std::collections::{HashMap as Map, HashSet as Set};
 use std::fmt;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct Intersection {
     pub stone: Option<Color>,
     pub star: bool,
-}
-
-impl Default for Intersection {
-    fn default() -> Self {
-        Intersection { stone: None, star: false }
-    }
 }
 
 #[derive(Debug)]
