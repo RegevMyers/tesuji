@@ -226,9 +226,7 @@ impl Board {
     }
 
     fn try_capture(&mut self, group: Group) {
-        if self.is_alive(&group) {
-            return;
-        };
+        if self.is_alive(&group) { return; };
 
         for point in group {
             if let Some(color) = self.board[point].stone {
