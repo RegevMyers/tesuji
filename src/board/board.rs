@@ -101,9 +101,9 @@ impl Board {
         let bottom_left = |(x, y): Point| (board_x - x - 1, y);
         let bottom_right = |(x, y): Point| (board_x - x - 1, board_y - y - 1);
 
-        let center = |(x, y): Point| vec![(x / 2, y / 2)];
-        let corners = |(x, y): Point| vec![top_left((x, y)), top_right((x, y)), bottom_left((x, y)), bottom_right((x, y))];
-        let sides = |(x, y): Point| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
+        let center = |(x, y): (usize, usize)| vec![(x / 2, y / 2)];
+        let corners = |(x, y): (usize, usize)| vec![top_left((x, y)), top_right((x, y)), bottom_left((x, y)), bottom_right((x, y))];
+        let sides = |(x, y): (usize, usize)| vec![(x / 2, 3), (3, y / 2), (x / 2, y - 4), (x - 4, y / 2)];
 
         let mut stars = match *dimensions {
             Dimensions { x, y } if x <= 5 || y <= 5 => vec![],
