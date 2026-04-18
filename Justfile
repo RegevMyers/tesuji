@@ -40,7 +40,7 @@ set shell := [ "bash", "-cu" ]
 @push +msg: (ci)
     git add -A
     - git commit -m "{{ msg }}"
-    git push origin HEAD
+    git push -u origin HEAD
 
 # Format
 [group("lint")]
