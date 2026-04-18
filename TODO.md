@@ -8,11 +8,14 @@ This is a passive client that just renders the game while its played, with no us
 - [x] Parse SGF using `sgf-parse`
 - [x] Print Goban
 - [x] Star Points
-- [ ] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
-- [ ] Get gameId from cmdline and get sgf from server
-- [ ] Tests: Yeah ...
+- [x] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
+- [ ] Refactor: Split `src/board/board.rs` into multiple files, create `prolog.rs`
+- [ ] Captured Stones, Komi and Handicap
+- [ ] Get gameId from cmdline and get sgf from server, print and exit
+- [ ] basic game loop
+- [ ] Tests: Everything
+- [ ] Tests: With Apiary
 - [ ] Use Ratatui
-- [ ] Renderer: visualize more nodes `Move`, `Setup`, `Root` and `Info` properties (?)
 - [ ] Renderer: Get a end-of-game sgf and visualize it
 - [ ] Tests: Test!
 - [ ] Make src/common/logging.rs a macro monster
@@ -21,10 +24,7 @@ This is a passive client that just renders the game while its played, with no us
 # Basic OGS Client
 
 - [ ] Go over [OGS API Docs](https://online-go.com/api-docs/)
-- [ ] Add as a workspace
-- [ ] Loop: just show the json
-- [ ] Basic client: Track a game (by ID), show game state and visualize board
-- [ ] Use ratatui
+- [ ] Add client/ as a workspace
 - [ ] User input: Create input window below board
 - [ ] User input: Parse user input, allow just moves, and make them
 - [ ] Show more info about the game
@@ -34,9 +34,8 @@ This is a passive client that just renders the game while its played, with no us
 
 # Pkg
 
-- [ ] Package as a `cargo` binary
+- [ ] Package as a `cargo` binary, upload to `crates.io`
 - [ ] Package as an `apt` package
-- [ ] Upload to a local repo and manually test
 
 # Advanced Move-Making
 

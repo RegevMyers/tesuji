@@ -5,7 +5,7 @@ mod common;
 use clap::Parser;
 use sgf_parse::go as parser;
 
-use common::{Error, log};
+use common::{Color, Error, log};
 
 use std::fs;
 use std::io;
@@ -23,7 +23,7 @@ fn read_file(path: &Path) -> Result<String, io::Error> {
 fn app(sgf_path: &Path) -> Result<(), Error> {
     log::message("Welcome to Tesuji!");
 
-    log::input(&format!("Reading: {:?}", sgf_path));
+    log::input(&format!("Reading: {sgf_path:?}"));
 
     let sgf = read_file(sgf_path)?;
     let collection = parser::parse(&sgf)?;
@@ -36,7 +36,9 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
     let mut board = board::Board::new(root)?;
     board.apply_nodes(rest.to_vec())?;
 
-    println!("\n{}", board);
+    println!();
+    println!("Black: {} | White: {}", board.captures()[&Color::Black], board.captures()[&Color::White]);
+    println!("{}", board);
 
     Ok(())
 }

@@ -39,7 +39,7 @@ set shell := [ "bash", "-cu" ]
 [group("vcs")]
 @push +msg: (ci)
     git add -A
-    git commit -m "{{ msg }}"
+    - git commit -m "{{ msg }}"
     git push origin HEAD
 
 # Format
@@ -67,4 +67,10 @@ set shell := [ "bash", "-cu" ]
 # Lines of Code
 [group("util")]
 @loc:
-    wc -l $(fdfind -e rs -E mod.rs)
+    fdfind -e rs -E mod.rs --strip-cwd-prefix -0 | xargs -0 wc -l | sort -n -r | sed -E $'1s|(.*)|\033[1m\\1\033[0m|'
+
+# Clear
+[group("util")]
+@clear:
+    clear
+
