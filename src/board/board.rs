@@ -1,3 +1,4 @@
+// a
 use array2d::Array2D;
 use colored::{ColoredString, Colorize};
 use sgf_parse::go::{Move, Point as SgfPoint, Prop};
