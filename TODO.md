@@ -9,7 +9,7 @@ This is a passive client that just renders the game while its played, with no us
 - [x] Print Goban
 - [x] Star Points
 - [x] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
-- [ ] Refactor: Split `src/board/board.rs` into multiple files
+- [ ] Refactor: Split `src/board/board.rs` into multiple files, create `prolog.rs`
 - [ ] Captured Stones, Komi and Handicap
 - [ ] Get gameId from cmdline and get sgf from server, print and exit
 - [ ] basic game loop

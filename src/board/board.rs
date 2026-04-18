@@ -162,15 +162,15 @@ impl Board {
         self.board[point].stone = Some(color);
 
         let adjacent_points = self.get_adjacent_points(point);
-        let adjacent_groups = adjacent_points.into_iter().filter_map(|point| self.get_containing_group(point)).collect::<Vec<Group>>();
+        let adjacent_groups = adjacent_points.into_iter().map(|point| self.get_containing_group(point)).collect::<Vec<Group>>();
 
         for group in adjacent_groups {
             self.try_capture(group)
         }
 
-        if let Some(own_group) = self.get_containing_group(point) {
-            self.try_capture(own_group);
-        }
+        let own_group = self.get_containing_group(point);
+
+        self.try_capture(own_group);
 
         Ok(())
     }
@@ -191,16 +191,12 @@ impl Board {
         )
     }
 
-    fn get_containing_group(&self, point: Point) -> Option<Group> {
+    fn get_containing_group(&self, point: Point) -> Group {
         let mut group = Group::new();
 
         self.add_and_recurse(&mut group, point);
 
-        if group.is_empty() {
-            return None;
-        }
-
-        Some(group)
+        group
     }
 
     fn add_and_recurse(&self, group: &mut Group, point: Point) {
