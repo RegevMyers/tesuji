@@ -1,11 +1,12 @@
+use crate::common::prolog::*;
+
 use array2d::Array2D;
 use colored::{ColoredString, Colorize};
 use sgf_parse::go::{Move, Point as SgfPoint, Prop};
 use sgf_parse::{PropertyType, SgfNode, SgfProp};
 
-use crate::common::{Color, Error, SplitEnds, log};
+use crate::common::SplitEnds;
 
-use std::collections::{HashMap as Map, HashSet as Set};
 use std::fmt;
 
 #[derive(Copy, Clone, Default)]

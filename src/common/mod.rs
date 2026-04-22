@@ -1,3 +1,5 @@
+pub mod prolog;
+
 pub mod log;
 
 mod error;
