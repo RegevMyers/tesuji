@@ -2,15 +2,12 @@ mod board;
 mod cli;
 mod common;
 
+use crate::common::prolog::*;
+
 use clap::Parser;
 use sgf_parse::go as parser;
 
-use common::{Color, Error, log};
-
-use std::fs;
-use std::io;
 use std::io::Read;
-use std::path::Path;
 
 fn read_file(path: &Path) -> Result<String, io::Error> {
     let mut reader = io::BufReader::new(fs::File::open(path)?);

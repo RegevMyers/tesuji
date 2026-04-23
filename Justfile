@@ -40,7 +40,12 @@ set shell := [ "bash", "-cu" ]
 @push +msg: (ci)
     git add -A
     - git commit -m "{{ msg }}"
-    git push origin HEAD
+    git push -u origin HEAD
+
+# Create Branch
+[group("vcs")]
+@branch name: (fetch)
+    git switch -c {{ name }} origin/dev
 
 # Format
 [group("lint")]
