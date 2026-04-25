@@ -33,7 +33,7 @@ set shell := [ "bash", "-cu" ]
 # Pull
 [group("vcs")]
 @pull: (fetch)
-    git pull origin HEAD
+    git pull
 
 # Push
 [group("vcs")]
