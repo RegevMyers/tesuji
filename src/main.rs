@@ -35,9 +35,13 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
 
     println!();
     println!(
-        "Black: {} ({}) | White: {}+{}",
+        "{}[{}]: {} ({}) | {}[{}]: {}+{}",
+        board.players()[&Color::Black],
+        board.ranks()[&Color::Black],
         board.captures()[&Color::Black],
         board.handicap(),
+        board.players()[&Color::White],
+        board.ranks()[&Color::White],
         board.captures()[&Color::White],
         board.komi()
     );
