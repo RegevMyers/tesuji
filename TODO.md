@@ -10,8 +10,10 @@ This is a passive client that just renders the game while its played, with no us
 - [x] Star Points
 - [x] Engine: Play out (root) game tree and calculate game state (captures etc.), store captures
 - [x] Refactor: Split `src/board/board.rs` into multiple files, create `prolog.rs`
-- [ ] NonZeroUsize
+- [ ] NonZeroUsize 
 - [ ] Captured Stones, Komi and Handicap
+- [ ] Use RealColor and bold for better board visuals
+- [ ] This `src/board/core` root node mandatory-prolog is hell ! 
 - [ ] Get gameId from cmdline and get sgf from server, print and exit
 - [ ] basic game loop
 - [ ] Tests: Everything
