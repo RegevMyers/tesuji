@@ -33,11 +33,11 @@ impl Board {
     pub fn new(root: &GoNode) -> Result<Self, Error> {
         let dimensions = Self::get_dimensions(root)?;
         let board = Self::initial_board(&dimensions);
-        let initial_captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
+        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
         let komi = Self::get_komi(root)?;
         let handicap = Self::get_handicap(root)?;
 
-        Ok(Self { board, dimensions, captures: initial_captures, komi, handicap })
+        Ok(Self { board, dimensions, captures, komi, handicap })
     }
 
     pub fn apply_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
