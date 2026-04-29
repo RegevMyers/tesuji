@@ -20,6 +20,10 @@ pub struct Board {
     pub(super) board: Array2D<Intersection>,
     pub(super) dimensions: Dimensions,
     pub(super) captures: Map<Color, usize>,
+    pub(super) players: Map<Color, String>,
+    pub(super) ranks: Map<Color, String>,
+    pub(super) komi: f64,
+    pub(super) handicap: i64,
 }
 
 type GoNode = SgfNode<Prop>;
@@ -31,8 +35,13 @@ impl Board {
     pub fn new(root: &GoNode) -> Result<Self, Error> {
         let dimensions = Self::get_dimensions(root)?;
         let board = Self::initial_board(&dimensions);
+        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
+        let players = Self::get_players(root)?;
+        let ranks = Self::get_ranks(root)?;
+        let komi = Self::get_komi(root)?;
+        let handicap = Self::get_handicap(root)?;
 
-        Ok(Self { board, dimensions, captures: Map::from([(Color::Black, 0), (Color::White, 0)]) })
+        Ok(Self { board, dimensions, captures, players, ranks, komi, handicap })
     }
 
     pub fn apply_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
@@ -59,6 +68,22 @@ impl Board {
 
     pub fn captures(&self) -> &Map<Color, usize> {
         &self.captures
+    }
+
+    pub fn players(&self) -> &Map<Color, String> {
+        &self.players
+    }
+
+    pub fn ranks(&self) -> &Map<Color, String> {
+        &self.ranks
+    }
+
+    pub fn komi(&self) -> f64 {
+        self.komi
+    }
+
+    pub fn handicap(&self) -> i64 {
+        self.handicap
     }
 }
 
@@ -115,6 +140,57 @@ impl Board {
         }
 
         stars.into_iter().flatten().collect()
+    }
+
+    fn get_players(root: &GoNode) -> Result<Map<Color, String>, Error> {
+        if !root.is_root {
+            return Err(Error::message("Node is not root node"));
+        }
+
+        if let Some(Prop::PB(black)) = root.get_property("PB")
+            && let Some(Prop::PW(white)) = root.get_property("PW")
+        {
+            return Ok(Map::from([(Color::Black, black.to_string()), (Color::White, white.to_string())]));
+        }
+
+        Err(Error::message("Missing PB/PW property"))
+    }
+
+    fn get_ranks(root: &GoNode) -> Result<Map<Color, String>, Error> {
+        if !root.is_root {
+            return Err(Error::message("Node is not root node"));
+        }
+        if let Some(Prop::BR(black)) = root.get_property("BR")
+            && let Some(Prop::WR(white)) = root.get_property("WR")
+        {
+            return Ok(Map::from([(Color::Black, black.to_string()), (Color::White, white.to_string())]));
+        }
+
+        Err(Error::message("Missing BR/WR property"))
+    }
+
+    fn get_komi(root: &GoNode) -> Result<f64, Error> {
+        if !root.is_root {
+            return Err(Error::message("Node is not root node"));
+        }
+
+        if let Some(&Prop::KM(komi)) = root.get_property("KM") {
+            return Ok(komi);
+        }
+
+        Ok(0.5)
+    }
+
+    fn get_handicap(root: &GoNode) -> Result<i64, Error> {
+        if !root.is_root {
+            return Err(Error::message("Node is not root node"));
+        }
+
+        if let Some(&Prop::HA(handicap)) = root.get_property("HA") {
+            return Ok(handicap);
+        }
+
+        Ok(0)
     }
 
     fn get_move(node: &GoNode, dimensions: &Dimensions) -> Option<(Color, Option<Point>)> {

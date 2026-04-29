@@ -34,7 +34,17 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
     board.apply_nodes(rest.to_vec())?;
 
     println!();
-    println!("Black: {} | White: {}", board.captures()[&Color::Black], board.captures()[&Color::White]);
+    println!(
+        "{}[{}]: {} ({}) | {}[{}]: {}+{}",
+        board.players()[&Color::Black],
+        board.ranks()[&Color::Black],
+        board.captures()[&Color::Black],
+        board.handicap(),
+        board.players()[&Color::White],
+        board.ranks()[&Color::White],
+        board.captures()[&Color::White],
+        board.komi()
+    );
     println!("{}", board);
 
     Ok(())
