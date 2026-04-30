@@ -35,15 +35,16 @@ pub(super) type Group = Set<Point>;
 
 impl Board {
     pub fn new(root: &GoNode) -> Result<Self, Error> {
-        let dimensions = Self::get_dimensions(root)?;
-        let board = Self::initial_board(&dimensions);
-        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
-
         let root = RootNode::try_from(root)?;
+
+        let dimensions = root.get_dimensions()?;
         let players = root.get_players()?;
         let ranks = root.get_ranks()?;
         let komi = root.get_komi()?;
         let handicap = root.get_handicap()?;
+
+        let board = Self::initial_board(&dimensions);
+        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
 
         Ok(Self { board, dimensions, captures, players, ranks, komi, handicap })
     }
@@ -107,17 +108,6 @@ impl Board {
 type SetupMove = (Option<Color>, Vec<Point>);
 
 impl Board {
-    fn get_dimensions(root: &GoNode) -> Result<Dimensions, Error> {
-        if !root.is_root {
-            return Err(Error::message("Node is not root node"));
-        }
-
-        match root.get_property("SZ") {
-            Some(&Prop::SZ((x, y))) => Ok(Dimensions { x: x.into(), y: y.into() }),
-            _ => Err(Error::message("Missing property in root node: SZ")),
-        }
-    }
-
     fn get_stars(dimensions: &Dimensions) -> Vec<Point> {
         let &Dimensions { x: board_x, y: board_y } = dimensions;
 
