@@ -38,8 +38,8 @@ impl Board {
         let dimensions = Self::get_dimensions(root)?;
         let board = Self::initial_board(&dimensions);
         let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
-        let root = RootNode::try_from(root)?;
 
+        let root = RootNode::try_from(root)?;
         let players = root.get_players()?;
         let ranks = root.get_ranks()?;
         let komi = root.get_komi()?;
@@ -145,6 +145,7 @@ impl Board {
 
         stars.into_iter().flatten().collect()
     }
+
     fn get_move(node: &GoNode, dimensions: &Dimensions) -> Option<(Color, Option<Point>)> {
         let is_normal_board_size = {
             let &Dimensions { x, y } = dimensions;
