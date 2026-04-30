@@ -103,11 +103,7 @@ impl Board {
 
         board
     }
-}
 
-type SetupMove = (Option<Color>, Vec<Point>);
-
-impl Board {
     fn get_stars(dimensions: &Dimensions) -> Vec<Point> {
         let &Dimensions { x: board_x, y: board_y } = dimensions;
 
@@ -135,7 +131,11 @@ impl Board {
 
         stars.into_iter().flatten().collect()
     }
+}
 
+type SetupMove = (Option<Color>, Vec<Point>);
+
+impl Board {
     fn get_move(node: &GoNode, dimensions: &Dimensions) -> Option<(Color, Option<Point>)> {
         let is_normal_board_size = {
             let &Dimensions { x, y } = dimensions;
