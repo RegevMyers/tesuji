@@ -1,0 +1,3 @@
+[ # ] Welcome to Tesuji!
+[ < ] Reading: "sgfs/GoSeigen-HoninboShusai.sgf"
+[ X ] Missing HA property

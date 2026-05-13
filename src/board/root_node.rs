@@ -57,8 +57,14 @@ impl RootNode {
     }
 
     pub fn get_handicap(&self) -> Result<i64, Error> {
+        let handle_invalid = |values: &Vec<String>| match values.as_slice() {
+            [handicap] => handicap.parse::<i64>().or(Err(Error::message("Invalid HA property: Value unparsable"))),
+            _ => Err(Error::message("Invalid HA property: Multiple values")),
+        };
+
         match self.get_property("HA") {
             Some(&Prop::HA(handicap)) => Ok(handicap),
+            Some(Prop::Invalid(_, values)) => handle_invalid(values),
             _ => Err(Error::message("Missing HA property")),
         }
     }
