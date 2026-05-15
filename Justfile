@@ -35,9 +35,11 @@ set shell := [ "bash", "-cu" ]
 @pull: (fetch)
     git pull
 
+timestamp := shell("date -u")
+
 # Push
 [group("vcs")]
-@push +msg: (ci)
+@push +msg=timestamp: (ci)
     git add -A
     - git commit -m "{{ msg }}"
     git push -u origin HEAD
