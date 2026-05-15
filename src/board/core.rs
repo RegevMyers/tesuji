@@ -34,38 +34,38 @@ pub(super) type Point = (usize, usize);
 pub(super) type Group = Set<Point>;
 
 impl Board {
-    pub fn new(root: &GoNode) -> Result<Self, Error> {
-        let root = RootNode::try_from(root)?;
+    pub fn from_sgf(nodes: Vec<&GoNode>) -> Result<Self, Error> {
+        let (root, rest) = nodes.split_first().ok_or(Error::message("No root node"))?;
 
-        let dimensions = root.get_dimensions()?;
-        let players = root.get_players()?;
-        let ranks = root.get_ranks()?;
-        let komi = root.get_komi()?;
-        let handicap = root.get_handicap()?;
+        let mut board = Self::initialize_from_sgf_root(root)?;
+        board.apply_sgf_nodes(rest.to_vec())?;
 
-        let board = Self::initial_board(&dimensions);
-        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
-
-        Ok(Self { board, dimensions, captures, players, ranks, komi, handicap })
+        Ok(board)
     }
 
-    pub fn apply_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
+    pub fn apply_sgf_node(&mut self, node: &GoNode) -> Result<(), Error> {
+        let dimensions = &self.dimensions;
+
+        let r#move = Self::get_move(node, dimensions);
+        let setup_moves = Self::get_setup_moves(node);
+
+        if let Some((color, Some((x, y)))) = r#move {
+            self.play_move(color, (x, y))?;
+        }
+
+        for (color, points) in setup_moves {
+            for (x, y) in points {
+                log::trace(&format!("Setup | {color:?} @ [({x}, {y})]"));
+                self.board[(x, y)] = Intersection { stone: color, star: false };
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn apply_sgf_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
         for node in nodes {
-            let dimensions = &self.dimensions;
-
-            let r#move = Self::get_move(node, dimensions);
-            let setup_moves = Self::get_setup_moves(node);
-
-            if let Some((color, Some((x, y)))) = r#move {
-                self.play_move(color, (x, y))?;
-            }
-
-            for (color, points) in setup_moves {
-                for (x, y) in points {
-                    log::trace(&format!("Setup | {color:?} @ [({x}, {y})]"));
-                    self.board[(x, y)] = Intersection { stone: color, star: false };
-                }
-            }
+            self.apply_sgf_node(node)?;
         }
 
         Ok(())
@@ -93,7 +93,22 @@ impl Board {
 }
 
 impl Board {
-    fn initial_board(dimensions: &Dimensions) -> Array2D<Intersection> {
+    fn initialize_from_sgf_root(root: &GoNode) -> Result<Self, Error> {
+        let root = RootNode::try_from(root)?;
+
+        let dimensions = root.get_dimensions()?;
+        let players = root.get_players()?;
+        let ranks = root.get_ranks()?;
+        let komi = root.get_komi()?;
+        let handicap = root.get_handicap()?;
+
+        let board = Self::empty_board(&dimensions);
+        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
+
+        Ok(Self { board, dimensions, captures, players, ranks, komi, handicap })
+    }
+
+    fn empty_board(dimensions: &Dimensions) -> Array2D<Intersection> {
         let &Dimensions { x, y } = dimensions;
         let mut board = Array2D::filled_with(Intersection::default(), x, y);
 

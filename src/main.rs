@@ -28,10 +28,7 @@ fn app(sgf_path: &Path) -> Result<(), Error> {
     let main_variation = root.main_variation();
 
     let nodes = main_variation.collect::<Vec<_>>();
-    let (root, rest) = nodes.split_first().ok_or(Error::message("No root node"))?;
-
-    let mut board = board::Board::new(root)?;
-    board.apply_nodes(rest.to_vec())?;
+    let board = board::Board::from_sgf(nodes)?;
 
     println!();
     println!(
