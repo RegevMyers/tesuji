@@ -7,7 +7,7 @@ set shell := [ "bash", "-cu" ]
 
 # Run
 [group("run")]
-@run cli="":
+@run +cli="":
     cargo run --release -- {{ cli }}
 
 # Build

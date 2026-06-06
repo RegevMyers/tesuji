@@ -5,5 +5,9 @@ use std::path::PathBuf;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 pub struct Cli {
-    pub sgf: PathBuf,
+    #[arg(long)]
+    pub sgf: Option<PathBuf>,
+
+    #[arg(long)]
+    pub id: Option<u64>,
 }

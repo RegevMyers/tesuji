@@ -1,5 +1,6 @@
 use crate::common::prolog::*;
 
+use crate::api;
 use crate::board::root_node::RootNode;
 
 use array2d::Array2D;
@@ -34,7 +35,16 @@ pub(super) type Point = (usize, usize);
 pub(super) type Group = Set<Point>;
 
 impl Board {
-    pub fn new(root: &GoNode) -> Result<Self, Error> {
+    pub fn from_sgf(nodes: Vec<&GoNode>) -> Result<Self, Error> {
+        let (root, rest) = nodes.split_first().ok_or(Error::message("No root node"))?;
+
+        let mut board = Self::from_sgf_root(root)?;
+        board.apply_sgf_nodes(rest.to_vec())?;
+
+        Ok(board)
+    }
+
+    fn from_sgf_root(root: &GoNode) -> Result<Self, Error> {
         let root = RootNode::try_from(root)?;
 
         let dimensions = root.get_dimensions()?;
@@ -49,7 +59,7 @@ impl Board {
         Ok(Self { board, dimensions, captures, players, ranks, komi, handicap })
     }
 
-    pub fn apply_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
+    fn apply_sgf_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
         for node in nodes {
             let dimensions = &self.dimensions;
 
@@ -70,7 +80,28 @@ impl Board {
 
         Ok(())
     }
+}
 
+impl Board {
+    pub fn from_id(id: u64) -> Result<Self, Error> {
+        let client = api::http::Client::new()?;
+
+        let board = client.game_state(id)?;
+        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
+
+        Ok(Self {
+            board,
+            dimensions: Dimensions { x: board.num_columns(), y: board.num_rows() },
+            captures,
+            players: Map::from([(Color::Black, "PlaceholderB"), (Color::White, "PlaveholderW")]),
+            ranks,
+            komi,
+            handicap,
+        })
+    }
+}
+
+impl Board {
     pub fn captures(&self) -> &Map<Color, usize> {
         &self.captures
     }
