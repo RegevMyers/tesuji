@@ -11,7 +11,8 @@ This is a passive client that just renders the game while its played, with no us
 - [x] Engine: Play out (root) game tree and calculate game state (captures etc.)
 - [x] Refactor: Split `src/board/board.rs` into multiple files, create `prolog.rs`
 - [x] Metadata: Player names, Ranks, Captured Stones, Komi and Handicap
-- [ ] Get GameId from cmd and get sgf from server, print and exit
+- [x] Get GameId from cmd and get ~~sgf~~ json from server, print and exit
+- [ ] Metadata from GameId
 - [ ] move root_ and play_ to sgf/
 - [ ] move prolog out of common (?)
 - [ ] Basic game loop
