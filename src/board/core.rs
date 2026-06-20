@@ -1,5 +1,7 @@
 use crate::common::prolog::*;
 
+use crate::common::map;
+
 use crate::api;
 use crate::board::root_node::RootNode;
 
@@ -85,13 +87,10 @@ impl Board {
 impl Board {
     pub fn from_id(id: u64) -> Result<Self, Error> {
         let client = api::http::Client::new()?;
-
         let state = client.game_state(id)?;
-        let dimensions = Dimensions { x: state.num_columns(), y: state.num_rows() };
 
-        let temp = state.as_row_major().iter().map(|&stone| Intersection { stone, star: false }).collect::<Vec<Intersection>>();
-        // Why doesnt array2d provide a `.map()` ??
-        let board = Array2D::from_row_major(&temp, state.num_rows(), state.num_columns())?;
+        let dimensions = Dimensions { x: state.num_columns(), y: state.num_rows() };
+        let board = map(state, |&stone| Intersection { stone, star: false })?;
 
         let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
 

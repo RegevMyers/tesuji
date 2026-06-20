@@ -10,3 +10,6 @@ pub use crate::common::color::*;
 
 mod slice;
 pub use crate::common::slice::*;
+
+mod array2d;
+pub use crate::common::array2d::*;
