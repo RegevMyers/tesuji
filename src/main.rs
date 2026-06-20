@@ -49,10 +49,23 @@ fn handle_sgf(sgf_path: &Path) -> Result<(), Error> {
 }
 
 fn handle_id(id: u64) -> Result<(), Error> {
-    let client = api::http::Client::new()?;
-    let state = client.game_state(id)?;
-    dbg!(state);
-    todo!()
+    let board = board::Board::from_id(id)?;
+
+    println!();
+    println!(
+        "{}[{}]: {} ({}) | {}[{}]: {}+{}",
+        board.players()[&Color::Black],
+        board.ranks()[&Color::Black],
+        board.captures()[&Color::Black],
+        board.handicap(),
+        board.players()[&Color::White],
+        board.ranks()[&Color::White],
+        board.captures()[&Color::White],
+        board.komi()
+    );
+    println!("{}", board);
+
+    Ok(())
 }
 
 fn app(cli: cli::Cli) -> Result<(), Error> {

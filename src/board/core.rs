@@ -86,17 +86,23 @@ impl Board {
     pub fn from_id(id: u64) -> Result<Self, Error> {
         let client = api::http::Client::new()?;
 
-        let board = client.game_state(id)?;
+        let state = client.game_state(id)?;
+        let dimensions = Dimensions { x: state.num_columns(), y: state.num_rows() };
+
+        let temp = state.as_row_major().iter().map(|&stone| Intersection { stone, star: false }).collect::<Vec<Intersection>>();
+        // Why doesnt array2d provide a `.map()` ??
+        let board = Array2D::from_row_major(&temp, state.num_rows(), state.num_columns())?;
+
         let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
 
         Ok(Self {
             board,
-            dimensions: Dimensions { x: board.num_columns(), y: board.num_rows() },
+            dimensions,
             captures,
-            players: Map::from([(Color::Black, "PlaceholderB"), (Color::White, "PlaveholderW")]),
-            ranks,
-            komi,
-            handicap,
+            players: Map::from([(Color::Black, "PlaceholderB".to_string()), (Color::White, "PlaveholderW".to_string())]),
+            ranks: Map::from([(Color::Black, "9p".to_string()), (Color::White, "9p".to_string())]),
+            komi: 6.5,
+            handicap: 0,
         })
     }
 }
@@ -126,13 +132,19 @@ impl Board {
 impl Board {
     fn initial_board(dimensions: &Dimensions) -> Array2D<Intersection> {
         let &Dimensions { x, y } = dimensions;
-        let mut board = Array2D::filled_with(Intersection::default(), x, y);
+        let board = Array2D::filled_with(Intersection::default(), x, y);
 
-        for star in Self::get_stars(dimensions) {
-            board[star].star = true;
+        Self::apply_stars(board)
+    }
+
+    fn apply_stars(board: Array2D<Intersection>) -> Array2D<Intersection> {
+        let mut starred_board = board.clone();
+
+        for star in Self::get_stars(&Dimensions { x: board.num_rows(), y: board.num_columns() }) {
+            starred_board[star].star = true;
         }
 
-        board
+        starred_board
     }
 
     fn get_stars(dimensions: &Dimensions) -> Vec<Point> {

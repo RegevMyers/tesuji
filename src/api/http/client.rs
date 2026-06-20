@@ -31,8 +31,10 @@ impl Client {
             _ => None,
         };
 
-        let row_to_color = |row: Vec<u8>| row.into_iter().map(to_color).collect::<Vec<Option<Color>>>();
+        let column_to_color = |column: Vec<u8>| column.into_iter().map(to_color).collect::<Vec<Option<Color>>>();
 
-        Ok(Array2D::from_rows(&state.board.into_iter().map(row_to_color).collect::<Vec<Vec<Option<Color>>>>())?)
+        Ok(Array2D::from_columns(
+            &state.board.into_iter().map(column_to_color).collect::<Vec<Vec<Option<Color>>>>(),
+        )?)
     }
 }
