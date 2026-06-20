@@ -1,10 +1,11 @@
-use thiserror::Error;
-
 use crate::common::log;
+
+use thiserror::Error;
 
 use array2d;
 use reqwest;
 use sgf_parse;
+
 use std::io;
 
 #[derive(Debug, Error)]
