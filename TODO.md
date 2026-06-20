@@ -13,6 +13,8 @@ This is a passive client that just renders the game while its played, with no us
 - [x] Metadata: Player names, Ranks, Captured Stones, Komi and Handicap
 - [x] Get GameId from cmd and get ~~sgf~~ json from server, print and exit
 - [ ] Metadata from GameId
+- [ ] Query `api/v1` to get endpoints
+- [ ] Update meta/
 - [ ] move root_ and play_ to sgf/
 - [ ] move prolog out of common (?)
 - [ ] Basic game loop
