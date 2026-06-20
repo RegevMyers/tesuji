@@ -1,5 +1,8 @@
 use crate::common::prolog::*;
 
+use crate::common::map;
+
+use crate::api;
 use crate::board::root_node::RootNode;
 
 use array2d::Array2D;
@@ -34,7 +37,16 @@ pub(super) type Point = (usize, usize);
 pub(super) type Group = Set<Point>;
 
 impl Board {
-    pub fn new(root: &GoNode) -> Result<Self, Error> {
+    pub fn from_sgf(nodes: Vec<&GoNode>) -> Result<Self, Error> {
+        let (root, rest) = nodes.split_first().ok_or(Error::message("No root node"))?;
+
+        let mut board = Self::from_sgf_root(root)?;
+        board.apply_sgf_nodes(rest.to_vec())?;
+
+        Ok(board)
+    }
+
+    fn from_sgf_root(root: &GoNode) -> Result<Self, Error> {
         let root = RootNode::try_from(root)?;
 
         let dimensions = root.get_dimensions()?;
@@ -49,7 +61,7 @@ impl Board {
         Ok(Self { board, dimensions, captures, players, ranks, komi, handicap })
     }
 
-    pub fn apply_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
+    fn apply_sgf_nodes(&mut self, nodes: Vec<&GoNode>) -> Result<(), Error> {
         for node in nodes {
             let dimensions = &self.dimensions;
 
@@ -70,7 +82,31 @@ impl Board {
 
         Ok(())
     }
+}
 
+impl Board {
+    pub fn from_id(id: u64) -> Result<Self, Error> {
+        let client = api::http::Client::new()?;
+        let state = client.game_state(id)?;
+
+        let dimensions = Dimensions { x: state.num_columns(), y: state.num_rows() };
+        let board = map(state, |&stone| Intersection { stone, star: false })?;
+
+        let captures = Map::from([(Color::Black, 0), (Color::White, 0)]);
+
+        Ok(Self {
+            board,
+            dimensions,
+            captures,
+            players: Map::from([(Color::Black, "PlaceholderB".to_string()), (Color::White, "PlaveholderW".to_string())]),
+            ranks: Map::from([(Color::Black, "9p".to_string()), (Color::White, "9p".to_string())]),
+            komi: 6.5,
+            handicap: 0,
+        })
+    }
+}
+
+impl Board {
     pub fn captures(&self) -> &Map<Color, usize> {
         &self.captures
     }
@@ -95,13 +131,19 @@ impl Board {
 impl Board {
     fn initial_board(dimensions: &Dimensions) -> Array2D<Intersection> {
         let &Dimensions { x, y } = dimensions;
-        let mut board = Array2D::filled_with(Intersection::default(), x, y);
+        let board = Array2D::filled_with(Intersection::default(), x, y);
 
-        for star in Self::get_stars(dimensions) {
-            board[star].star = true;
+        Self::apply_stars(board)
+    }
+
+    fn apply_stars(board: Array2D<Intersection>) -> Array2D<Intersection> {
+        let mut starred_board = board.clone();
+
+        for star in Self::get_stars(&Dimensions { x: board.num_rows(), y: board.num_columns() }) {
+            starred_board[star].star = true;
         }
 
-        board
+        starred_board
     }
 
     fn get_stars(dimensions: &Dimensions) -> Vec<Point> {

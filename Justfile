@@ -1,13 +1,12 @@
 set shell := [ "bash", "-cu" ]
 
-@_default: 
-    echo
+@__default: 
     just --list --unsorted
     echo
 
 # Run
 [group("run")]
-@run cli="":
+@run +cli="":
     cargo run --release -- {{ cli }}
 
 # Build
@@ -27,12 +26,12 @@ set shell := [ "bash", "-cu" ]
 
 # Fetch
 [group("vcs")]
-@fetch:
+@_fetch:
     git fetch origin
 
 # Pull
 [group("vcs")]
-@pull: (fetch)
+@pull: (_fetch)
     git pull
 
 timestamp := shell("date -u")
@@ -46,7 +45,7 @@ timestamp := shell("date -u")
 
 # Create Branch
 [group("vcs")]
-@branch name: (fetch)
+@branch name: (_fetch)
     git switch -c {{ name }} origin/dev
 
 # Format

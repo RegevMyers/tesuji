@@ -1,8 +1,11 @@
-use thiserror::Error;
-
 use crate::common::log;
 
-use sgf_parse::SgfParseError;
+use thiserror::Error;
+
+use array2d;
+use reqwest;
+use sgf_parse;
+
 use std::io;
 
 #[derive(Debug, Error)]
@@ -10,11 +13,17 @@ pub enum Error {
     #[error("{0}")]
     Message(String),
 
+    #[error("Array2D: {0}")]
+    Array2D(#[from] array2d::Error),
+
     #[error("Sgf: {0}")]
-    Sgf(#[from] SgfParseError),
+    Sgf(#[from] sgf_parse::SgfParseError),
 
     #[error("IO: {0}")]
     Io(#[from] io::Error),
+
+    #[error("Reqwest: {0}")]
+    Reqwest(#[from] reqwest::Error),
 }
 
 impl Error {
