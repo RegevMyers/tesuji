@@ -1,0 +1,21 @@
+[package]
+name = "tesuji"
+version = "0.0.0"
+description = "A Go client for the Terminal"
+repository = "https://github.com/RegevMyers/tesuji"
+readme = "README.md"
+license = "AGPLv3"
+keywords = [ "go", "game", "tui", "baduk", "weiqi" ]
+edition = "2024"
+
+[dependencies]
+array2d = "0.3.2"
+clap = { version = "4.5.60", features = ["derive"] }
+colored = "3.1.1"
+reqwest = { version = "0.13.4", features = ["json", "blocking"] }
+serde = { version = "1.0.228", features = ["derive"] }
+sgf-parse = "4.2.8"
+thiserror = "2.0.18"
+
+[lints.clippy]
+module_inception = "allow"

@@ -1,1 +1,62 @@
+# Basic SGF Renderer - Passive Client
+
+Application that gets GameId from the command line and renders it, works during the game and with end-of-game annotations.
+This is a passive client that just renders the game while its played, with no user iteraction.
+
+- [x] Hello world
+- [x] Read file from disk
+- [x] Parse SGF using `sgf-parse`
+- [x] Print Goban
+- [x] Star Points
+- [x] Engine: Play out (root) game tree and calculate game state (captures etc.)
+- [x] Refactor: Split `src/board/board.rs` into multiple files, create `prolog.rs`
+- [x] Metadata: Player names, Ranks, Captured Stones, Komi and Handicap
+- [x] Get GameId from cmd and get ~~sgf~~ json from server, print and exit
+- [ ] Metadata from GameId
+- [ ] move root_ and play_ to sgf/
+- [ ] move prolog out of common (?)
+- [ ] Basic game loop
+- [ ] Tests: L1s
+- [ ] Tests: L2s With Apiary
+- [ ] Use Ratatui
+- [ ] Renderer: Get a end-of-game sgf and visualize it
+- [ ] Make src/common/logging.rs a macro monster
+
+Bonus: 
+
+- Can `Board::Display` and `Board::print_row` work with iterators, so there is no need to collect the rows?
+- Maybe put Justfile in a different repo, have it as a submodule? generic git stuff will always be useful
+- NonZeroUsize 
+- Use RealColor and bold for better board visuals
+
+# Basic OGS Client
+
+- [ ] Go over [OGS API Docs](https://online-go.com/api-docs/)
+- [ ] Add client/ as a workspace
+- [ ] User input: Create input window below board
+- [ ] User input: Parse user input, allow just moves, and make them
+- [ ] Show more info about the game
+- [ ] Allow moves, passes, and resignations
+- [ ] Support listing and choosing games from games the user participates in
+- [ ] Support creating games
+
+# Pkg
+
+- [ ] Package as a `cargo` binary, upload to `crates.io`
+- [ ] Package as an `apt` package
+
+# Advanced Move-Making
+
+- [ ] Allow making moves with arrow keys (and numpad for star points?)
+
+# Chat
+
+- [ ] Show chat
+- [ ] Allow to write messages
+- [ ] Allow normal, malkovich, and personal settings
+
+# Variations
+
+- [ ] Render tree structure
+- [ ] Enable traversing tree with arrow keys
 
